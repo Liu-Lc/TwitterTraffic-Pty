@@ -1,0 +1,41 @@
+:root {
+  font-family: "Montserrat", Roboto, "Segoe UI", sans-serif;
+}
+
+h1 {
+  font-family: "Montserrat", Roboto, "Segoe UI", sans-serif;
+  font-size:24;
+}
+
+/* #container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#sidebar {
+  width: 15%;
+  top: 0; bottom: 0; left: 0;
+  position: fixed;
+  padding: 15px;
+  background-color: #c3ccd5;
+  min-width: 150px;
+}
+
+#middlebar {
+  offset: 15%;
+  width: 15%;
+  top: 0; bottom: 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  min-width: 150px;
+}
+
+#content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+} */
+
+div.twitter-tweet-rendered {
+  max-width: 300px !important;
+}
