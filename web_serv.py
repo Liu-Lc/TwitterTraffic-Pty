@@ -34,26 +34,33 @@ controls = html.Div([
 sidebar = html.Div([
     html.H2('Búsqueda'),
     html.Hr(), controls
-], id='sidebar')
+], className='pretty_container sidebar two columns')
 
 middlebar = html.Div([
     html.H2('Reportes'),
     html.Hr(), controls
-], id='middlebar')
+], className='pretty_container sidebar two columns')
 
 content1 = html.Div([
-    dcc.Graph(id='graph_1')
-], id='map')
+    dcc.Graph(id='graph1')
+], className='pretty_container six columns')
 
 content2 = html.Div([
-    dcc.Graph(id='graph_2')
-], id='graph1')
+    dcc.Graph(id='graph2')
+], className='pretty_container six columns')
+
+mapgraph = html.Div([
+    dcc.Graph(id='map')
+], className='row pretty_container')
 
 content = html.Div([
     html.H1('Visualización de incidentes de tráfico'),
     html.Hr(),
-    content1, content2
-], id='content')
+    html.Div([
+        content1, content2
+    ], className='row flex'),
+    mapgraph
+], className='six columns')
 
     # html.Div(id='output_container', children=[]),
     # html.Br(),
@@ -78,7 +85,12 @@ content = html.Div([
 # ])
 
 ## app layout
-app.layout = html.Div([head, sidebar, middlebar, content], id='container')
+app.layout = html.Div([
+    head,
+    html.Div([
+        sidebar, middlebar, content
+    ], className='row')
+],id='mainContainer')
 
 try:
     app.run_server()
