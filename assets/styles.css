@@ -25,34 +25,24 @@ h6 { font-size: 1.4rem; line-height: 1.6;  letter-spacing: 0;
   margin-bottom: 0.75rem; margin-top: 0.75rem;}
 p { font-size: 1.36rem; }
 
-.container {
-  position: relative;
-  width: 100%;
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+  /* margin: 2%; */
 }
-.column,
-.columns {
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.column,.columns {
   width: 100%;
-  /* float: left; */
 }
 
 .row {
   display: flex;
-}
-
-/* For devices larger than 400px */
-@media (max-width: 1000px) {
-  .container {
-    flex-wrap: wrap;
-  }
-  .container > .columns {
-    width: 100%;
-  }
-}
-
-#mainContainer {
-  display: flex;
-  flex-direction: column;
-  margin: 2%;
+  flex-direction: row;
 }
 
 .pretty_container {
@@ -62,6 +52,7 @@ p { font-size: 1.36rem; }
   padding: 10px;
   position: relative;
   box-shadow: 2px 2px 2px lightgrey;
+  min-width: 150px;
 }
 
 .one.column,
@@ -81,16 +72,14 @@ p { font-size: 1.36rem; }
 .one-third.column               { width: 30.6666666667%; }
 .two-thirds.column              { width: 65.3333333333%; }
 
-.one-half.column                { width: 48%; min-width: 170px; }
+.one-half.column                { width: 48%; }
 
-/* Clearing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
-
-/* Self Clearing Goodness */
-/* .container:after,
-.row:after,
-.column,.columns:after,
-.u-cf {
-  content: "";
-  display: table;
-  clear: both; } */
+/* For screens smaller than 1000px */
+@media (max-width: 1150px) {
+  .container {
+    flex-direction: column;
+  }
+  .container > .columns {
+    width: 100%;
+  }
+}

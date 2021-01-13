@@ -74,24 +74,36 @@ content = html.Div([
 ## app layout
 app.layout = html.Div([
     head,
+    html.H1('Visualización de incidentes de tráfico'),
+    html.Hr(),
     html.Div([
-        html.H1('Visualización de incidentes de tráfico'),
-        html.Hr()
-    ], className='column'),
-    html.Div([
+
         html.Div([
-            html.H4('Búsqueda'),
-            html.Hr()
-        ], className='pretty_container one-half column'),
+            html.Div([
+                html.H4('Búsqueda'),
+                html.Hr()
+            ], className='pretty_container one-half column'),
+            html.Div([
+                html.H4('Reportes'),
+                html.Hr()
+                ], className='pretty_container one-half column')
+        ], className='row four columns'),
+
         html.Div([
-            html.H4('Reportes'),
-            html.Hr()
-            ], className='pretty_container one-half column')
-    ], className='row container'),
-    html.Div([
-        html.Div([
-        ], className='pretty_container')
-    ], className='seven columns')
+            html.Div([
+                html.Div([
+                    dcc.Graph(id='graph1')
+                ], className='pretty_container six columns'),
+                html.Div([
+                    dcc.Graph(id='graph2')
+                ], className='pretty_container six columns')
+            ], className='row'),
+            html.Div([
+                dcc.Graph(id='map')
+            ], className='pretty_container')
+        ], className='eight columns')
+
+    ], className='container'),
 ], id='mainContainer')
 
 try:
