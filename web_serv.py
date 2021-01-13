@@ -74,10 +74,11 @@ content = html.Div([
 ## app layout
 app.layout = html.Div([
     head,
-    html.H1('Visualización de incidentes de tráfico'),
-    html.Hr(),
     html.Div([
-
+        html.H1('Visualización de incidentes de tráfico'),
+        html.Hr(),
+    ], className='column'),
+    html.Div([
         html.Div([
             html.Div([
                 html.H4('Búsqueda'),
@@ -102,7 +103,6 @@ app.layout = html.Div([
                 dcc.Graph(id='map')
             ], className='pretty_container')
         ], className='eight columns')
-
     ], className='container'),
 ], id='mainContainer')
 
