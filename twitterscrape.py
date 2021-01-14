@@ -6,34 +6,38 @@ from selenium.webdriver import Chrome
 from getpass import getpass
 from IPython.display import clear_output
 from datetime import timedelta
+from db_connection import DB_Connection
+
+class Tweet(): pass
 
 def get_tweet(card):
     '''Extract data from tweet card.'''
-    userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
-    username = card.find_element_by_xpath('.//span').text
-    text = card.find_element_by_xpath('.//div[2]/div[2]/div[1]').text
+    t = Tweet()
+    t.place = t.coords = ''
+    t.userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
+    t.username = card.find_element_by_xpath('.//span').text
+    t.text = card.find_element_by_xpath('.//div[2]/div[2]/div[1]').text
 
     try:
-        date = card.find_element_by_xpath('.//time').get_attribute('datetime')
+        t.date = card.find_element_by_xpath('.//time').get_attribute('datetime')
         # date = datetime.strftime(date)
     except NoSuchElementException as e:
         return
     # link
-    link = card.find_element_by_xpath('.//time/..').get_attribute('href')
-    tweetid =  re.split('/', link)[5]
+    t.link = card.find_element_by_xpath('.//time/..').get_attribute('href')
+    t.tweetid =  re.split('/', t.link)[5]
 
-    media = []
+    t.media = ['','','','']
     try:
-        media.append(card.find_element_by_xpath('.//div[2]/div[2]/div[2]//video').get_attribute('poster'))
+        t.media.append(card.find_element_by_xpath('.//div[2]/div[2]/div[2]//video').get_attribute('poster'))
     except Exception: pass
     try:
         imgs = card.find_elements_by_xpath('.//div[2]/div[2]/div[2]//img')
         for img in imgs:
-            media.append(img.get_attribute('src'))
+            t.media.append(img.get_attribute('src'))
     except Exception: pass
 
-    tweet = (tweetid, userid, username, text, date, link, media)
-    return tweet
+    return t
 
 # start driver and go to twitter
 driver = Chrome('C:\\Users\\lucia\\chromedriver.exe')
