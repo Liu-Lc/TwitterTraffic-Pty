@@ -42,11 +42,9 @@ class DB_Connection():
         self.cursor = self.conn.cursor()
         try:
             # insert user
-            print(t.userid, t.username)
             command = '''INSERT INTO TWTUSER(USER_ID, USER_NAME)
                         VALUES ('%s', '%s') ON CONFLICT (USER_ID) 
                         DO NOTHING;''' % (t.userid, t.username)
-            print(command)
             self.cursor.execute(command)
             # insert tweet
             command = '''INSERT INTO TWTTWEET(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
@@ -60,6 +58,33 @@ class DB_Connection():
         except Exception as e: print(e)
         # commit changes and close cursor
         self.conn.commit()
+        self.cursor.close()
+
+    def query_id(self, tweetid):
+        '''Returns result from query.'''
+        results = ''
+        self.cursor = self.conn.cursor()
+        try:
+            self.cursor.execute('SELECT * FROM twttweet WHERE tweet_id=' + 
+                str(tweetid) + ';')
+            results = self.cursor.fetchall()
+            return results
+        except Exception as e: print(e); return
+        self.cursor.close()
+
+    def query_date(self, last=True):
+        '''Gets first or last date obtained.'''
+        q = ''
+        if last: q = '''SELECT TWEET_CREATED FROM TWTTWEET ORDER BY TWEET_CREATED
+                    DESC LIMIT 1;'''
+        else: q = '''SELECT TWEET_CREATED FROM TWTTWEET ORDER BY TWEET_CREATED
+                    ASC LIMIT 1;'''
+        self.cursor = self.conn.cursor()
+        try:
+            self.cursor.execute(q)
+            result = self.cursor.fetchone()[0]
+            return result
+        except Exception as e: print(e); return
         self.cursor.close()
 
     def close_connection(self):

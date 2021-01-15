@@ -1,4 +1,4 @@
-import re
+import re, sys
 from time import sleep, time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
@@ -27,7 +27,7 @@ def get_tweet(card):
     t.link = card.find_element_by_xpath('.//time/..').get_attribute('href')
     t.tweetid =  re.split('/', t.link)[5]
 
-    t.media = ['','','','']
+    t.media = []
     try:
         t.media.append(card.find_element_by_xpath('.//div[2]/div[2]/div[2]//video').get_attribute('poster'))
     except Exception: pass
@@ -36,12 +36,18 @@ def get_tweet(card):
         for img in imgs:
             t.media.append(img.get_attribute('src'))
     except Exception: pass
+    for i in range(4-len(t.media)): t.media.append('')
 
     return t
+
+# initializing db
+db = DB_Connection()
+# db.create_tables()
 
 # start driver and go to twitter
 driver = Chrome('C:\\Users\\lucia\\chromedriver.exe')
 driver.get('https://www.twitter.com\login')
+sleep(2)
 # user and pass
 username = driver.find_element_by_xpath('//input[@name="session[username_or_email]"]')
 username.send_keys('Lc_L23')
@@ -50,33 +56,60 @@ password.send_keys(getpass() + Keys.RETURN)
 print('Logging in.')
 sleep(2)
 
+count = 0; starttime = time()
+exit_var = False
+
 # search the query
 print('Searching.')
-search = driver.find_element_by_xpath('//input[@aria-label="Search query"]')
-search.send_keys('(from:traficocpanama) OR (@traficocpanama) -filter:replies -filter:retweets' + Keys.RETURN)
-driver.find_element_by_link_text('Latest').click()
-
-last_pos = driver.execute_script('return window.pageYOffset;')
-sleep(2)
-print('Starting scrape.')
-count = 0
-starttime = time()
-
 while True:
-    cards = driver.find_elements_by_xpath('//div[@aria-label="Timeline: Search timeline"]/div/div')
-    for card in cards:
-        count += 1
-        tweet = get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
-        clear_output(wait=True)
-        nowtime = time()
-        print('Tweets obtained:', str(count), \
-            '\tETA:', str(timedelta(seconds=nowtime-starttime)))
+    res = db.query_date(False)
+    res = (res + timedelta(days=1)).strftime('%Y-%m-%d')
+    print('Restarting search: ' + res)
+    search = driver.find_element_by_xpath('//input[@aria-label="Search query"]')
+    search.clear()
+    search.send_keys('(from:traficocpanama) OR (@traficocpanama) until:'+ res + \
+                ' -filter:replies -filter:retweets' + Keys.RETURN)
+    sleep(2)
+    driver.find_element_by_link_text('Latest').click()
 
-    # get next scroll
-    s = re.split(r'[\s()]', cards[-1].get_attribute('style'))[6]
-    s = re.sub('[a-z]', '', s)
-    driver.execute_script('window.scrollTo(0, ' + s +');')
-    sleep(0.5)
-    curr_pos = driver.execute_script('return window.pageYOffset;')
-    if last_pos==curr_pos: break
-    else: last_pos = curr_pos
+    last_pos = driver.execute_script('return window.pageYOffset;')
+    sleep(1)
+    print('Starting scrape.')
+    s1 = s0 = '0'
+
+    while True:
+        cards = driver.find_elements_by_xpath('//div[@aria-label="Timeline: Search timeline"]/div/div')
+        for card in cards:
+            try:
+                tweet = get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
+                if len(db.query_id(tweet.tweetid))==0 or tweet==None:
+                    db.insert_tweet(tweet)
+                    count += 1
+                    clear_output(wait=True)
+                    nowtime = time()
+                    sys.stdout.write('\r' + 'Tweets obtained: ' + str(count) + \
+                        '\tETA:' + str(timedelta(seconds=nowtime-starttime)))
+                    sys.stdout.flush()
+            except Exception as e: print('\n', e)
+
+        # get next scroll
+        if len(s1)>6: break
+        else:
+            try:
+                s1 = re.split(r'[\s()]', cards[-1].get_attribute('style'))[6]
+                s1 = re.sub('[a-z]', '', s1)
+                s1 = re.sub('\+', 'e', s1)
+                s1 = str(int(float(s1) + 1000))
+                driver.execute_script('window.scrollTo(0, ' + s1 +');')
+            except:
+                s0 = str(int(float(s0) + 2000))
+                s0 = re.sub('\+', 'e', s0)
+                driver.execute_script('window.scrollTo(0, ' + s0 +');')
+            sleep(2)
+            curr_pos = driver.execute_script('return window.pageYOffset;')
+            if last_pos==curr_pos: exit_var = True; break
+            else: last_pos = curr_pos
+    if exit_var: break
+
+print('\nEnd of search, closing.')
+db.close_connection()

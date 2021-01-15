@@ -1,6 +1,7 @@
 .gitignore
 dataframe.csv
 scrape.ipynb
+tests.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
