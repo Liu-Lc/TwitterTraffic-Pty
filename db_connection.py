@@ -87,6 +87,20 @@ class DB_Connection():
         except Exception as e: print(e); return
         self.cursor.close()
 
+    def query_all(self):
+        '''Returns the whole dataset.'''
+        command = '''SELECT T.TWEET_ID, T.TWEET_USER_ID, U.USER_NAME, T.TWEET_TEXT, 
+                    T.TWEET_CREATED, T.TWEET_LINK, T.MEDIA1, T.MEDIA2, T.MEDIA3, T.MEDIA4 
+                    FROM TWTTWEET AS T INNER JOIN TWTUSER AS U
+                    ON T.TWEET_USER_ID=U.USER_ID ORDER BY T.TWEET_CREATED DESC;'''
+        self.cursor = self.conn.cursor()
+        try:
+            self.cursor.execute(command)
+            results = self.cursor.fetchall()
+            return results
+        except Exception as e: print(e); return
+        self.cursor.close()
+
     def close_connection(self):
         '''Closes connection. '''
         self.conn.close()
