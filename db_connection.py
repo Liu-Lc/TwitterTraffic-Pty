@@ -118,6 +118,17 @@ class DB_Connection():
         except Exception as e: print(e); return
         self.cursor.close()
 
+    def query(self, q):
+        '''Returns result from query.'''
+        results = ''
+        self.cursor = self.conn.cursor()
+        try:
+            self.cursor.execute(q)
+            results = self.cursor.fetchall()
+            return results
+        except Exception as e: print(e); return
+        self.cursor.close()
+
     def query_all(self):
         '''Returns the whole dataset.'''
         command = '''SELECT T.TWEET_ID, T.TWEET_USER_ID, U.USER_NAME, T.TWEET_TEXT, 
