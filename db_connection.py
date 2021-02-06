@@ -26,7 +26,23 @@ class DB_Connection():
                                                 TWEET_PLACE TEXT, TWEET_COORDINATES TEXT, 
                                                 MEDIA1 TEXT, MEDIA2 TEXT, MEDIA3 TEXT, MEDIA4 TEXT,
                                                 CONSTRAINT FK_USER FOREIGN KEY(TWEET_USER_ID)
-                                                 REFERENCES TwtUser(USER_ID));''')
+                                                 REFERENCES TwtUser(USER_ID));''',
+                    # Table Incident
+                    '''CREATE TABLE IF NOT EXISTS TwtIncident(INC_TWEET_ID BIGINT PRIMARY KEY,
+                                                            INC_PLACE_ID BIGINT,
+                                                            ISINCIDENT BOOLEAN,
+                                                            ISACCIDENT BOOLEAN,
+                                                            ISOBSTACLE BOOLEAN,
+                                                            ISDANGER BOOLEAN,
+                                                            CONSTRAINT FK_TWT_ID FOREIGN KEY(INC_TWEET_ID)
+                                                                REFERENCES TwtTweet(TWEET_ID),
+                                                            CONSTRAINT FK_PLACE_ID FOREIGN KEY(INC_PLACE_ID)
+                                                                REFERENCES Place(PLACE_ID));''',
+                    # Table Place
+                    '''CREATE TABLE IF NOT EXISTS Place(PLACE_ID BIGINT PRIMARY KEY,
+                                                        PLACE_NAME TEXT,
+                                                        PLACE_LAT FLOAT,
+                                                        PLACE_LONG FLOAT);''')
         self.cursor = self.conn.cursor()
         try:
             for command in commands:
@@ -60,8 +76,23 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
+    def insert_incident(self, t):
+        '''Inserts incident data into the Incidents table.'''
+        self.cursor = self.conn.cursor()
+        try:
+            # insert incident
+            command = '''INSERT INTO INCIDENT(INC_TWEET_ID, PLACE,
+                        ISINCIDENT, ISACCIDENT, ISOBSTACLE, ISDANGER)
+                        VALUES (%s, %s, %s, %s, %s, %s);'''
+            self.cursor.execute(command, (t.tweetid, t.place, \
+                t.isIncident, t.isAccident, t.isObstacle, t.isDanger))
+        except Exception as e: print(e)
+        # commit changes and close cursor
+        self.conn.commit()
+        self.cursor.close()
+
     def query_id(self, tweetid):
-        '''Returns result from query.'''
+        '''Returns id from query.'''
         results = ''
         self.cursor = self.conn.cursor()
         try:
