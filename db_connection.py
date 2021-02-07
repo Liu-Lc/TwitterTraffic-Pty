@@ -91,6 +91,41 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
+    def insert_place(self, t):
+        '''Inserts place data into Place table.'''
+        self.cursor = self.conn.cursor()
+        try:
+            # insert incident
+            command = '''INSERT INTO PLACE(place_name, street, town, district, lat, "long")
+                        VALUES (%s, %s, %s, %s, %s, %s);'''
+            self.cursor.execute(command, (t.name, t.street, \
+                t.town, t.district, t.lat, t.long))
+        except Exception as e: print(e)
+        # commit changes and close cursor
+        self.conn.commit()
+        self.cursor.close()
+
+    def assign_place(self, id, place, street=None, no=None):
+        '''Assigns place with regex strings.'''
+        self.cursor = self.conn.cursor()
+        command = '''UPDATE tweets SET place=%d 
+                         WHERE place is null AND text ~* '%s'
+                         ''' % (id, place)
+        if street!='': 
+            print('street: ' + street)
+            command += " AND text ~* '" + street + "'"
+        if no!='': 
+            print('street: ' + no)
+            command += " AND text !~* '" + no + "'"
+        command += ';'
+        try:
+            self.cursor.execute(command)
+            print(command)
+        except Exception as e: print(e)
+        # commit changes and close cursor
+        self.conn.commit()
+        self.cursor.close()
+
     def query_id(self, tweetid):
         '''Returns id from query.'''
         results = ''
