@@ -1,0 +1,118 @@
+
+howard and not like dirección a howard
+puente de las Américas & Howard,
+Vía Interamericana & Howard,
+vía panamericana & Howard,
+	WHERE place not ilike '%howard%' 
+		--and place !~* 'interamericana|panamericana'
+		and text !~* 'altura de howard|en howard|por howard|entrada de howard|
+        salida de howard|área de howard|puente de las américas|vía puente|vía américas|
+        interamericana|panamericana|a howard';
+Carretera Panamericana Howard
+
+loma co[vb][áa] and not like dirección a Loma Cová
+puente de las Américas & Loma Cová,
+    WHERE text ~* 'loma cová'
+		and text !~* 'vía puente|vía principal de loma cová|área de loma cová|cerca de loma cová|salida de loma cová|en loma cová|altura de loma cová|por loma cová|sector de loma cová|interamericana|panamericana|vía hacia el puente|vía del puente|vía al puente'
+		and text !~* 'a loma cová';
+Loma Cobá El Cristal Panama
+
+Burunga and not like dirección a howard
+	WHERE text !~* '[^a] howard|[^a] loma cová'
+		and text ~* 'burunga'
+		and text !~* 'en burunga|por burunga|altura se burunga|principal de burunga|área de burunga|sector de burunga|cerca a burunga|cerca de burunga|salida de burunga|entrada de burunga|altura de burunga|altura burunga|próximo a burunga';
+
+Burunga vía centanario - vía centenario los cortijos panama
+Burunga vía interamericana | panamericana - carretera panamericana burunga panama
+
+
+ricardo.*alfaro|tumba muerto condado - vía ricardo j alfaro ancón panama
+centenario condado - vía centenario ancón
+Condado not condado real - condado del rey betania panama
+
+	WHERE text !~* 'a (howard|loma cová|burunga)'
+		and (text ~* 'dirección a (howard|loma cová|burunga)'
+			 or (text ~* 'condado'
+				 and text ~* 'área'
+				 and text !~* 'condado real|Ricardo.*Alfaro|tumba muerto|centenario'
+				));
+
+ricardo.*alfaro|tumba muerto
+	power[ ]*club, powerclub ricardo j alfaro panama
+	banco nacional 
+	price[ ]*smart
+	mc[ ]*donald
+	do[ ]*it[ ]*center
+	99
+	migración - migración ricardo j alfaro panama
+	universidad latina
+	universidad tecnologica|utp
+	usma
+	universidad interamericana
+	universidad de panamá
+	plaza edis[oó]n
+
+	machetazo
+	-- 		and text !~* 'versalles|costa sur|perú|hato montaña|corredor|ricardo.*alfaro|tumba muerto|panamericana|interamericana|miguelito|calidonia|tocumen|24|santiago|chitré|penonom[eé]|cocl[eé]|colón|coronado'
+-- 		and text !~* 'ricardo.*alfaro|tumba muerto|centenario|tocumen|domingo d[ií]az';
+
+	hospital - san miguel arcángel ricardo j alfaro panama
+	juan pablo
+		where text ~* 'juan pablo' and text !~* '(río|barriada) juan pablo'
+		and text ~* 'albrook|universidad'
+		and text !~* 'corredor|ricardo.*alfaro|tumba muerto|metropolitano|locer[ií]a|trans[ií]s(t)*mica|plaza edison'
+
+	dorado not like dirección al dorado or dirección hacia el dorado
+	
+
+
+
+
+puente de las américas
+
+puente de las Américas & Arraiján,
+
+7 de septiembre Arraiján
+
+
+
+
+24 de Diciembre
+Alcalde Díaz
+Ancón
+Betania
+Bella Vista
+Calidonia
+Caimitillo
+Chilibre
+Don Bosco
+El Chorrillo
+Curundú
+Ernesto Córdoba Campos
+Juan Díaz
+Las Cumbres
+Las Garzas
+Las Mañanitas
+Pacora
+Parque Lefevre
+Pedregal
+Pueblo Nuevo
+Río Abajo
+San Felipe
+San Francisco
+San Martín
+Santa Ana
+Tocumen
+
+San Miguelito
+Amelia Denis De Icaza
+Belisario Porras
+José Domingo Espinar
+Mateo Iturralde	Victoriano Lorenzo
+Arnulfo Arias
+Belisario Frías
+Omar Torrijos
+Rufina Alfaro 	
+
+Arraiján
+Burunga
