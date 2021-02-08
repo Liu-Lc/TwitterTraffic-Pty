@@ -112,10 +112,10 @@ class DB_Connection():
                          WHERE place is null AND text ~* '%s'
                          ''' % (id, place)
         if street!='': 
-            print('street: ' + street)
+            # print('street: ' + street)
             command += " AND text ~* '" + street + "'"
         if no!='': 
-            print('street: ' + no)
+            # print('street: ' + no)
             command += " AND text !~* '" + no + "'"
         command += ';'
         try:
