@@ -1,12 +1,20 @@
-DELETE FROM public.to_sql_test
-	WHERE text ~* 'san carlos|capira|veraguas|coronado|chitré|penonom[eé]|cocl[eé]|colón';
+DELETE FROM tweets
+	WHERE text ~* 'san carlos|capira|veraguas|coronado|chitré|penonom[eé]|cocl[eé]|pacora' 
+		or text ~* 'bocas del toro|chiriqu[ií]|boquete|chepo|río hato|chame';
 
-UPDATE public.to_sql_test
+DELETE FROM tweets
+	WHERE text ~* 'aguadulce|las tablas|los santos|chitr[eé]|[^\w]ant[oó]n[^\w]|campana'
+
+delete from tweets
+	where text !~* 'panam[aá].{0,5}col[oó]n|direcci[oó]n.{0,15}col[oó]n|direcci[oó]n.{0,10}provincia.{0,5}col[oó]n'
+		and text ~* 'col[oó]n';
+
+UPDATE public.tweets
 	SET place=0
 	WHERE text ~* 'howard'
 		and text !~* 'direcci[oó]n (a|hacia) howard';
 
-UPDATE public.to_sql_test
+UPDATE public.tweets
 	SET place=1
 	WHERE text ~* 'loma co[vb][áa]'
 		and text !~* 'direcci[oó]n (a|hacia) loma co[vb][áa]';
@@ -27,9 +35,16 @@ alter table public.place add column street text,
 	add column town text, 
 	add column district text;
 
--- alter table locations add constraint pk_locations_id primary key(index);
--- alter table tweets add constraint fk_place_id foreign key(place)
--- 	references locations(index);
+
+update tweets set place=null;
+
+alter table tweets alter column place type bigint using place::bigint;
+
+alter table locations add constraint pk_locations_id primary key(index);
+alter table tweets add constraint fk_place_id foreign key(place)
+	references locations(index);
+
+
 
 UPDATE public.tweets
 	SET place=4
@@ -124,3 +139,10 @@ UPDATE public.tweets
 	WHERE text ~* 'albrook' and text ~* 'corredor\s'
 	and text !~* 'hasta albrook|dirección(.{0,10})albrook|direcci[oó]n(.{0,10})corredor'
 		and place is null;
+
+UPDATE tweets SET place=33 
+		WHERE place is null AND text ~* 'altura(.{0,8})puente'
+		AND text ~* 'puente(.{0,10})am[eé]ricas';
+UPDATE tweets SET place=34 
+		WHERE place is null AND text ~* 'altura(.{0,8})arraij[aá]n'
+		AND text ~* 'puente(.{0,10})am[eé]ricas|cabecera' AND text !~* 'dirección(.{0,10})arraiján';
