@@ -65,6 +65,15 @@ ricardo.*alfaro|tumba muerto
 	dorado not like dirección al dorado or dirección hacia el dorado
 	
 
+SELECT id, text from tweets
+	where place is null and text ~* 'cinta costera|av.{0,10}balboa'
+		and text ~* 'dig' --and text ~* 'hacia.{0,8}(cinta costera|av.{0,10}balboa)'
+-- 		and text !~* 'av.{0,10}balboa y.{0,5} cinta costera|largo de.{0,5} cinta costera|en la cinta costera|en( la) av.{0,10}balboa'
+		and text !~* 'tramo marino|chorrillo|maracan[aá]|5.{0,5}mayo|3.{0,5}noviembre|federico boyd'
+		and text !~* 'cinta costera|mcdonald|mef|dgi|galer[ií](as) balboa|caja de ahorro|banco hipotecario|[^\w]bac[^\w]|[^\w]assa[^\w]|contralor[ií]a|casco|asamblea|hilton'
+		and text !~* '(direcci[oó]n|hacia).{0,8}(cinta costera|av.{0,10}balboa)|corredor'
+		and text !~* 'multicentro|paitilla|parque urrac[aá]|hospital|miramar|mercado|marbella' --exclusiones
+
 
 
 

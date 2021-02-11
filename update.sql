@@ -146,3 +146,76 @@ UPDATE tweets SET place=33
 UPDATE tweets SET place=34 
 		WHERE place is null AND text ~* 'altura(.{0,8})arraij[aá]n'
 		AND text ~* 'puente(.{0,10})am[eé]ricas|cabecera' AND text !~* 'dirección(.{0,10})arraiján';
+
+UPDATE tweets SET place=37 
+		WHERE place is null AND text ~* 'marbella'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=38 
+		WHERE place is null AND text ~* 'mercado'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=39 
+		WHERE place is null AND text ~* 'miramar'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=40 
+		WHERE place is null AND text ~* 'hospital'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=41 
+		WHERE place is null AND text ~* 'parque urrac[aá]'
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'hacia parque urrac[aá]';
+UPDATE tweets SET place=42 
+		WHERE place is null AND text ~* 'multicentro|paitilla|mcdonald'
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'mercado|direcci[oó]n.{0,8}av.{0,10}balboa|direcci[oó]n.{0,10}paitilla|hacia paitilla|viaducto';
+UPDATE tweets SET place=43 
+		WHERE place is null AND text ~* 'tramo marino'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=44 
+		WHERE place is null AND text ~* 'maracan[aá]'
+		AND text ~* 'cinta costera 3';
+UPDATE tweets SET place=45 
+		WHERE place is null AND text ~* 'chorrillo'
+		AND text ~* 'cinta costera 3';
+UPDATE tweets SET place=46 
+		WHERE place is null AND text ~* ''
+		AND text ~* 'cinta costera 3' AND text !~* 'tramo marino|chorrillo|maracan[aá]';
+UPDATE tweets SET place=47 
+		WHERE place is null AND text ~* 'banco hipotecario'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=48 
+		WHERE place is null AND text ~* '[^\w]bac[^\w]'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=49 
+		WHERE place is null AND text ~* 'contralor[ií]a'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=50 
+		WHERE place is null AND text ~* 'casco'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=51 
+		WHERE place is null AND text ~* '[^\w]assa[^\w]'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=52 
+		WHERE place is null AND text ~* 'asamblea'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=53 
+		WHERE place is null AND text ~* 'hilton'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=54 
+		WHERE place is null AND text ~* '5.{0,5}mayo'
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)';
+UPDATE tweets SET place=55 
+		WHERE place is null AND text ~* '3.{0,5}noviembre'
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)';
+UPDATE tweets SET place=56 
+		WHERE place is null AND text ~* 'federico boyd'
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)';
+UPDATE tweets SET place=57 
+		WHERE place is null AND text ~* 'caja de ahorro'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=58 
+		WHERE place is null AND text ~* 'dgi|mef|dig'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=59 
+		WHERE place is null AND text ~* 'galer[ií](as) balboa'
+		AND text ~* 'av.{0,10}balboa|cinta costera';
+UPDATE tweets SET place=60 
+		WHERE place is null AND text ~* ''
+		AND text ~* 'av.{0,10}balboa|cinta costera' AND text !~* 'corredor|costa del este';

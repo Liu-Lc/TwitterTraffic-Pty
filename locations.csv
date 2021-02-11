@@ -5,18 +5,18 @@
 3,Burunga,burunga,Autopista Panamá-La Chorrera,,Burunga,Arraiján,vía centenario los cortijos panama,"direcci[oó]n (.{0,10})burunga","8.9821919,-79.6479439",8.9821919,-79.6479439
 4,Power Club,power[ ]*club,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,powerclub ricardo j alfaro panama,,"9.00304,-79.5333753",9.00304,-79.5333753
 5,Banco Nacional,banco nacional,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,,,"9.01293,-79.53495",9.01293,-79.53495
-6,Price Smart,price[ ]*smart,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,pricesmart betania panama,,"9.01503,-79.53520",9.01503,-79.53520
+6,Price Smart,price[ ]*smart,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,pricesmart betania panama,,"9.01503,-79.53520",9.01503,-79.5352
 7,McDonald's,mc[ ]*donald,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,mcdonalds betania panama,,"9.01416,-79.53512",9.01416,-79.53512
-8,Do it Center,do[ ]*it[ ]*center,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,doit center betania panama,,"9.00670,-79.53778",9.00670,-79.53778
-9,Supermercado 99,99,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,super 99 ricardo j alfaro panama,,"9.0004583,-79.53281344620615",9.0004583,-79.53281344620615
-10,Servicio Nacional de Migración,migraci[oó],Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,migración ricardo j alfaro panama,,"9.0194835,-79.5336747987287",9.0194835,-79.5336747987287
+8,Do it Center,do[ ]*it[ ]*center,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,doit center betania panama,,"9.00670,-79.53778",9.0067,-79.53778
+9,Supermercado 99,99,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,super 99 ricardo j alfaro panama,,"9.0004583,-79.53281344620615",9.0004583,-79.53281345
+10,Servicio Nacional de Migración,migraci[oó],Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,migración ricardo j alfaro panama,,"9.0194835,-79.5336747987287",9.0194835,-79.5336748
 11,Universidad Latina,universidad latina,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,universidad latina betania panama,,"9.02875,-79.51934",9.02875,-79.51934
 12,USMA,usma,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,usma betania panama,,"9.02875,-79.51934",9.02875,-79.51934
 13,UTP Tocumen,universidad tecnol[oó]gica|\sutp\s,Avenida Domingo Díaz,tocumen|domingo d[ií]az,Las Mañanitas,Panamá,,,"9.06885,-79.40644",9.06885,-79.40644
-14,UTP Tumba Muerto,universidad tecnol[oó]gica|\sutp\s,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,,,"9.02046,-79.53090",9.02046,-79.53090
+14,UTP Tumba Muerto,universidad tecnol[oó]gica|\sutp\s,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,,,"9.02046,-79.53090",9.02046,-79.5309
 15,UTP Vía Centenario,universidad tecnol[oó]gica|\sutp\s,Vía Centenario,,Ancón,Panamá,,tocumen|domingo d[ií]az|ricardo.*alfaro|tumba muerto,"9.02646,-79.52924",9.02646,-79.52924
-16,UIP,universidad interamericana|\suip\s,Ricardo J. Alfaro (Tumba Muerto),,Betania,Panamá,,,"9.03126,-79.51640",9.03126,-79.51640
-17,Plaza Edison,plaza edis[oó]n,Avenida El Paical,paical,Betania,Panamá,edison plaza betania panama,,"8.9960,-79.5314",8.9960,-79.5314
+16,UIP,universidad interamericana|\suip\s,Ricardo J. Alfaro (Tumba Muerto),,Betania,Panamá,,,"9.03126,-79.51640",9.03126,-79.5164
+17,Plaza Edison,plaza edis[oó]n,Avenida El Paical,paical,Betania,Panamá,edison plaza betania panama,,"8.9960,-79.5314",8.996,-79.5314
 18,Plaza Edison,plaza edis[oó]n,Transístmica,trans[ií]s(t*)mica,Betania,Panamá,edison plaza betania panama,,"8.9918,-79.5308",8.9918,-79.5308
 19,Plaza Edison,plaza edis[oó]n,Ricardo J. Alfaro (Tumba Muerto),,Betania,Panamá,edison plaza betania panama,paical|trans[ií]s(t*)mica,"8.99542,-79.53353",8.99542,-79.53353
 20,Dorado,dorado,Ricardo J. Alfaro (Tumba Muerto),,Betania,Panamá,dorado betania panama,"direcci[oó]n(.{0,10})dorado","9.00942,-79.53429",9.00942,-79.53429
@@ -24,66 +24,66 @@
 22,Machetazo,machetazo,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto|miguelito,Betania,Panamá,,,"9.03133,-79.50872",9.03133,-79.50872
 23,Machetazo,machetazo,,calidonia|(avenida )* perú,Calidonia,Panamá,,,"8.96739,-79.53963",8.96739,-79.53963
 24,Machetazo,machetazo,24 de Diciembre,tocumen|24 de diciembre|panamericana|interamericana|corredor norte|mañanitas,Tocumen,Panamá,,,"9.09995,-79.38872",9.09995,-79.38872
-25,Machetazo,machetazo,Avenida Costanera,versalles,Versalles,Panamá,machetazo versalles panama,,"9.04260,-79.41768",9.04260,-79.41768
+25,Machetazo,machetazo,Avenida Costanera,versalles,Versalles,Panamá,machetazo versalles panama,,"9.04260,-79.41768",9.0426,-79.41768
 26,Machetazo,machetazo,Corredor Sur,costa sur|corredor sur,Versalles,Panamá,,,"9.0363,-79.4256",9.0363,-79.4256
 27,Juan Pablo II,juan pablo,Avenida Juan Pablo II,corredor|ricardo.*alfaro|tumba muerto|locer[ií]a|trans[ií]s(t)*mica|plaza edison,Betania,Panamá,,(río|barriada) juan pablo,"8.99658,-79.53711",8.99658,-79.53711
 28,Juan Pablo II,juan pablo,Avenida Juan Pablo II,metropolitano,Ancón,Panamá,,(río|barriada) juan pablo,"8.9905,-79.5444",8.9905,-79.5444
-29,Juan Pablo II,juan pablo,Avenida Juan Pablo II,universidad,Ancón,Panamá,,(río|barriada) juan pablo,"8.9812,-79.5450",8.9812,-79.5450
-30,Juan Pablo II,juan pablo|la amistad,Avenida Juan Pablo II,albrook,Ancón,Panamá,,(río|barriada) juan pablo,"8.9746,-79.5540",8.9746,-79.5540
+29,Juan Pablo II,juan pablo,Avenida Juan Pablo II,universidad,Ancón,Panamá,,(río|barriada) juan pablo,"8.9812,-79.5450",8.9812,-79.545
+30,Juan Pablo II,juan pablo|la amistad,Avenida Juan Pablo II,albrook,Ancón,Panamá,,(río|barriada) juan pablo,"8.9746,-79.5540",8.9746,-79.554
 31,Albrook,albrook,Corredor Norte,corredor\s,Ancón,Panamá,albrook mall corredor norte panama,"hasta albrook|direcci[oó]n(\s*\w*){0,8} albrook|direcci[oó]n(.{0,10})albrook|direcci[oó]n(.{0,10})centro comercial|direcci[oó]n(.{0,10})terminal|direcci[oó]n(.{0,10})corredor","8.9735,-79.5501",8.9735,-79.5501
 32,Puente de las Américas,"altura(.{0,8})puente",Calle Bona,"puente(.{0,10})am[eé]ricas",Ancón,Panamá,puente de las americas calle bona panama,,"8.94339,-79.56463",8.94339,-79.56463
 33,Arraiján,"altura(.{0,8})arraij[aá]n",Vía Interamericana,"puente(.{0,10})am[eé]ricas|cabecera",Arraiján,Panamá,panamericana el cristal arraiján panama,"dirección(.{0,10})arraiján","8.9557,-79.6553",8.9557,-79.6553
 34,Condado del Rey,condado,Ricardo J. Alfaro (Tumba Muerto),ricardo.*alfaro|tumba muerto,Betania,Panamá,condado del rey betania panama,condado real,"9.0247,-79.5241",9.0247,-79.5241
 35,Condado del Rey,condado,Vía Centenario,centenario,Betania,Panamá,condado del rey betania panama,condado real|ricardo.*alfaro|tumba muerto,"9.0279,-79.5303",9.0279,-79.5303
 36,Condado del Rey,condado,,,Betania,Panamá,condado del rey betania panama,condado real|ricardo.*alfaro|tumba muerto|centenario,"9.0346,-79.5258",9.0346,-79.5258
-37,,,,,,,,,,#VALUE!,#VALUE!
-38,,,,,,,,,,#VALUE!,#VALUE!
-39,,,,,,,,,,#VALUE!,#VALUE!
-40,,,,,,,,,,#VALUE!,#VALUE!
-41,,,,,,,,,,#VALUE!,#VALUE!
-42,,,,,,,,,,#VALUE!,#VALUE!
-43,,,,,,,,,,#VALUE!,#VALUE!
-44,,,,,,,,,,#VALUE!,#VALUE!
-45,,,,,,,,,,#VALUE!,#VALUE!
-46,,,,,,,,,,#VALUE!,#VALUE!
-47,,,,,,,,,,#VALUE!,#VALUE!
-48,,,,,,,,,,#VALUE!,#VALUE!
-49,,,,,,,,,,#VALUE!,#VALUE!
-50,,,,,,,,,,#VALUE!,#VALUE!
-51,,,,,,,,,,#VALUE!,#VALUE!
-52,,,,,,,,,,#VALUE!,#VALUE!
-53,,,,,,,,,,#VALUE!,#VALUE!
-54,,,,,,,,,,#VALUE!,#VALUE!
-55,,,,,,,,,,#VALUE!,#VALUE!
-56,,,,,,,,,,#VALUE!,#VALUE!
-57,,,,,,,,,,#VALUE!,#VALUE!
-58,,,,,,,,,,,
-59,,,,,,,,,,,
-60,,,,,,,,,,,
-61,,,,,,,,,,,
-62,,,,,,,,,,,
-63,,,,,,,,,,,
-64,,,,,,,,,,,
-65,,,,,,,,,,,
-66,,,,,,,,,,,
-67,,,,,,,,,,,
-68,,,,,,,,,,,
-69,,,,,,,,,,,
-70,,,,,,,,,,,
-71,,,,,,,,,,,
-72,,,,,,,,,,,
-73,,,,,,,,,,,
-74,,,,,,,,,,,
-75,,,,,,,,,,,
-76,,,,,,,,,,,
-77,,,,,,,,,,,
-78,,,,,,,,,,,
-79,,,,,,,,,,,
-80,,,,,,,,,,,
-81,,,,,,,,,,,
+37,Marbella,marbella,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,marbella cinta costera,,"8.97511,-79.51870",8.97511,-79.51870
+38,Mercado de Mariscos,mercado,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Santa Ana,Panamá,mercado de mariscos panama,,"8.95948,-79.53714",8.95948,-79.53714
+39,Miramar,miramar,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.97544,-79.52607",8.97544,-79.52607
+40,Hospital del Niño,hospital,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.96834,-79.53201",8.96834,-79.53201
+41,Parque Urracá,parque urrac[aá],Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,,hacia parque urrac[aá],"8.97481,-79.52758",8.97481,-79.52758
+42,Paitilla,multicentro|paitilla|mcdonald,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",San Francisco,Panamá,,"mercado|direcci[oó]n.{0,8}av.{0,10}balboa|direcci[oó]n.{0,10}paitilla|hacia paitilla|viaducto","8.97656,-79.51621",8.97656,-79.51621
+43,Tramo Marino,tramo marino,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Santa Ana,Panamá,,,"8.95693,-79.53360",8.95693,-79.53360
+44,Estadio Maracaná,maracan[aá],Avenida Balboa (Cinta Costera),cinta costera 3,El Chorrillo,Panamá,maracana panama,,"8.94666,-79.54936",8.94666,-79.54936
+45,El Chorrillo,chorrillo,Avenida Balboa (Cinta Costera),cinta costera 3,El Chorrillo,Panamá,chorrillo panama,,"8.94860,-79.54328",8.94860,-79.54328
+46,Cinta Costera 3,,Avenida Balboa (Cinta Costera),cinta costera 3,El Chorrillo,Panamá,cinta costera 3,tramo marino|chorrillo|maracan[aá],"8.94889,-79.54067",8.94889,-79.54067
+47,Banco Hipotecario,banco hipotecario,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.97179,-79.52972",8.97179,-79.52972
+48,BAC,[^\w]bac[^\w],Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,bac avenida balboa panama,,"8.97401,-79.52840",8.97401,-79.52840
+49,Contraloría General,contralor[ií]a,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.97555,-79.52559",8.97555,-79.52559
+50,Casco Viejo,casco,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",San Felipe,Panamá,,,"8.95682,-79.53657",8.95682,-79.53657
+51,Teatro Assa,[^\w]assa[^\w],Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.96414,-79.53501",8.96414,-79.53501
+52,Asamblea Nacional,asamblea,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.96248,-79.54125",8.96248,-79.54125
+53,Hotel Hilton,hilton,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,hilton panama,,"8.97570,-79.52277",8.97570,-79.52277
+54,5 de Mayo,"5.{0,5}mayo",Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Santa Ana,Panamá,cinco de mayo panama,"direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)","8.96206,-79.54021",8.96206,-79.54021
+55,Avenida 3 de Noviembre,"3.{0,5}noviembre",Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,"direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)","8.96140,-79.53970",8.96140,-79.53970
+56,Avenida Federico Boyd,federico boyd,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,,"direcci[oó]n.{0,8}(cinta costera|av.{0,10}balboa)","8.97553,-79.52668",8.97553,-79.52668
+57,Caja de Ahorros,caja de ahorro,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.97247,-79.52939",8.97247,-79.52939
+58,Edificio DGI MEF,dgi|mef|dig,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,,"8.97222,-79.52952",8.97222,-79.52952
+59,Galerías Balboa,galer[ií](as) balboa,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Bella Vista,Panamá,,,"8.97570,-79.52169",8.97570,-79.52169
+60,Avenida Balboa (Cinta Costera),,Avenida Balboa (Cinta Costera),"av.{0,10}balboa|cinta costera",Calidonia,Panamá,,corredor|costa del este,"8.9698,-79.5303",8.9698,-79.5303
+61,,,,,,Panamá,,,,#VALUE!,#VALUE!
+62,,,,,,Panamá,,,,#VALUE!,#VALUE!
+63,,,,,,,,,,#VALUE!,#VALUE!
+64,,,,,,,,,,#VALUE!,#VALUE!
+65,,,,,,,,,,#VALUE!,#VALUE!
+66,,,,,,,,,,#VALUE!,#VALUE!
+67,,,,,,,,,,#VALUE!,#VALUE!
+68,,,,,,,,,,#VALUE!,#VALUE!
+69,,,,,,,,,,#VALUE!,#VALUE!
+70,,,,,,,,,,#VALUE!,#VALUE!
+71,,,,,,,,,,#VALUE!,#VALUE!
+72,,,,,,,,,,#VALUE!,#VALUE!
+73,,,,,,,,,,#VALUE!,#VALUE!
+74,,,,,,,,,,#VALUE!,#VALUE!
+75,5 de Mayo,,,,,,,,,#VALUE!,#VALUE!
+76,Avenida 3 de Noviembre,,,,,,,,,#VALUE!,#VALUE!
+77,Avenida Federico Boyd,,,,,,,,,#VALUE!,#VALUE!
+78,,,,,,,,,,#VALUE!,#VALUE!
+79,,,,,,,,,,#VALUE!,#VALUE!
+80,,,,,,,,,,#VALUE!,#VALUE!
+81,,,,,,,,,,#VALUE!,#VALUE!
 82,,,,,,,,,,,
 83,,,,,,,,,,,
-84,,,,,,,,,,,
+84,Iglesia del Carmen,,,,,,,,,,
 85,,,,,,,,,,,
 86,,,,,,,,,,,
 87,,,,,,,,,,,
