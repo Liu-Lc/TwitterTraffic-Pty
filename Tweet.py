@@ -26,6 +26,13 @@ def preprocess(tweet):
     # remove stop words
     tweet = ' '.join([word for word in tweet.split(' ') 
                 if not word.lower() in stop_words])
+    #replace tildes
+    tweet = re.sub('á', 'a', tweet)
+    tweet = re.sub('é', 'e', tweet)
+    tweet = re.sub('í', 'i', tweet)
+    tweet = re.sub('ó', 'o', tweet)
+    tweet = re.sub('ú', 'u', tweet)
+    tweet = re.sub('ü', 'u', tweet)
     return tweet
 
 def clean_text(dataframe, column_name):
