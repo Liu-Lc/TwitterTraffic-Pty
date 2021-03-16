@@ -3,8 +3,11 @@ from getpass import getpass
 import time, datetime
 
 class DB_Connection():
-    def __init__(self, database='traffictwt', user='postgres'):
-        self.connect(database, user)
+    def __init__(self):
+        # self.connect(database, user)
+        # self.database = database
+        # self.user = user
+        pass
     
     def connect(self, database='traffictwt', user='postgres', password=getpass()):
         '''Connection to a database.'''
