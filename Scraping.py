@@ -78,7 +78,7 @@ class Scrape():
             # formats date for search and minus a day
             date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
             print('From date: ' + date_from)
-            query_text += 'from:' + date_from
+            query_text += 'since:' + date_from
             # checks if a limit date was given
             if date_until!='':
                 query_text += 'until:' + date_until
