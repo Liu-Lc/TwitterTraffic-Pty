@@ -3,6 +3,7 @@ others
 locations.xlsx
 extra.ipynb
 extra
+analysis
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
