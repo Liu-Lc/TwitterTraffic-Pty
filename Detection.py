@@ -15,7 +15,7 @@ def get_classification(dataframe, column):
     '''Receives dataframe with text and returns dataframe with
      classification and categorization data.'''
     # copies dataframe
-    df = dataframe[:]
+    df = dataframe.iloc[:]
     ## vectorizes data
     vect_data3 = vectorizer3.transform(df[column])
     vect_data10 = vectorizer10.transform(df[column])
