@@ -4,7 +4,7 @@ import time, datetime
 
 class DB_Connection():
     def __init__(self):
-        # self.connect(database, user)
+        self.connect()
         # self.database = database
         # self.user = user
         pass
@@ -67,12 +67,12 @@ class DB_Connection():
             self.cursor.execute(command)
             # insert tweet
             command = '''INSERT INTO TWTTWEET(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
-                        TWEET_CREATED, TWEET_LINK, TWEET_COORDINATES, TWEET_PLACE, 
+                        TWEET_CREATED, TWEET_LINK, 
                         MEDIA1, MEDIA2, MEDIA3, MEDIA4)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT DO NOTHING;'''
             self.cursor.execute(command, (t.tweetid, t.userid, \
-                t.text, t.date, t.link, t.place, t.coords, \
+                t.text, t.date, t.link, \
                     t.media[0], t.media[1], t.media[2], t.media[3]))
         except Exception as e: print(e)
         # commit changes and close cursor

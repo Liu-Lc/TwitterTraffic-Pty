@@ -73,7 +73,7 @@ class Scrape():
             ## query text
             query_text = '(from:traficocpanama) OR (@traficocpanama) '
             ## get last date in database
-            if date_from=='':
+            if date_from=='' or date_from==None:
                 date_from = self.db.query_date(last=True)
             # formats date for search and minus a day
             date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
@@ -81,7 +81,7 @@ class Scrape():
             query_text += 'since:' + date_from
             # checks if a limit date was given
             if date_until!='':
-                query_text += 'until:' + date_until
+                query_text += ' until:' + date_until
             query_text += ' -filter:replies -filter:retweets'
             # gets search box element
             search = driver.find_element_by_xpath('//input[@aria-label="Search query"]')
@@ -103,7 +103,7 @@ class Scrape():
                 for card in cards: # loops in each card
                     try:
                         # gets the tweet info from a card
-                        tweet = get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
+                        tweet = self.get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
                         # checks if the tweet is valid
                         if len(self.db.query_id(tweet.tweetid))==0 or tweet==None:
                             # inserts tweet in database
