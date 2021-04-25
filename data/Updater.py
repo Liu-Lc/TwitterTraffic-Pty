@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module documentation goes here
-   and here
-   and ...
+"""Updater file executes when the system hasn't been Streaming data
+and the database needs to update the Tweets that didn't get during
+certain period of time.
 
 Created on Sat Apr 24 21:28 2021 21:28
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
@@ -17,30 +17,25 @@ import time
 from keys import *
 import Tweet
 
-# consumer key authentication
-auth = OAuthHandler(consumer_key, consumer_secret)
-# access key authentication
-auth.set_access_token(access_token, access_token_secret)
-# set up API with authentication handler
-api = API(auth, wait_on_rate_limit=True)
+def get_tweets(api):
+   """Executes the function to get the last 7 days tweets.
 
-# Define the word to seach and date
-search_word = "(from:traficocpanama) OR (@traficocpanama) -filter:replies -filter:retweets"
+   Args:
+       api (tweepy.API): Gets the api with the authentication.
 
-start_time = time.time()
-
-# Collect tweets
-tweets = Cursor(api.search,
-                q=search_word,
-                # since='2021-04-23',
-                tweet_mode='extended').items()
-
-all_info = [Tweet(t.id, t.user.screen_name, t.user.name, t.full_text, t.created_at,
-                'https://www.twitter.com/' + str(t.user.screen_name) + '/status/' + str(t.id)) 
-            for t in tweets]
-
-end_time = time.time()
-
-print(end_time-start_time)
-print()
-print(all_info[0])
+   Returns:
+       Tweet array: Returns an array with all the Tweets found.
+   """
+   # set up API with authentication handler
+   api = api
+   # Define the word to seach and date
+   search_word = "(from:traficocpanama) OR (@traficocpanama) -filter:replies -filter:retweets"
+   # Collect tweets
+   tweets = Cursor(api.search,
+                  q=search_word,
+                  # since='2021-04-23',
+                  tweet_mode='extended').items()
+   all_tweets = [Tweet(t.id, t.user.screen_name, t.user.name, t.full_text, t.created_at,
+                  'https://www.twitter.com/' + str(t.user.screen_name) + '/status/' + str(t.id)) 
+               for t in tweets]
+   return all_tweets
