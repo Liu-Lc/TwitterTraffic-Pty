@@ -7,8 +7,7 @@ from getpass import getpass
 from IPython.display import clear_output
 from datetime import timedelta
 from DBConnect import DB_Connection
-
-class Tweet(): pass
+import Tweet
 
 class Scrape():
     def __init__(self):
@@ -36,18 +35,6 @@ class Scrape():
         t.link = card.find_element_by_xpath('.//time/..').get_attribute('href')
         # tweet id is in the tweet link
         t.tweetid =  re.split('/', t.link)[5]
-        ## GET MEDIA FILES
-        t.media = []
-        try: # gets video files if exists
-            t.media.append(card.find_element_by_xpath('.//div[2]/div[2]/div[2]//video').get_attribute('poster'))
-        except Exception: pass
-        try: # gets image files if exist
-            imgs = card.find_elements_by_xpath('.//div[2]/div[2]/div[2]//img')
-            for img in imgs:
-                t.media.append(img.get_attribute('src'))
-        except Exception: pass
-        # check if there are links, if not then assign empty
-        for i in range(4-len(t.media)): t.media.append('')
         ## RETURN TWEET INFO
         return t
 

@@ -57,7 +57,8 @@ class DB_Connection():
         self.cursor.close()
 
     def insert_tweet(self, t):
-        '''Inserts rows/data into Tweets table.'''
+        '''Inserts rows/data into Tweets table. With attributes
+            userid, username, tweetid, text, date, link'''
         self.cursor = self.conn.cursor()
         try:
             # insert user
@@ -67,13 +68,11 @@ class DB_Connection():
             self.cursor.execute(command)
             # insert tweet
             command = '''INSERT INTO TWTTWEET(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
-                        TWEET_CREATED, TWEET_LINK, 
-                        MEDIA1, MEDIA2, MEDIA3, MEDIA4)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        TWEET_CREATED, TWEET_LINK)
+                        VALUES (%s, %s, %s, %s, %s)
                         ON CONFLICT DO NOTHING;'''
             self.cursor.execute(command, (t.tweetid, t.userid, \
-                t.text, t.date, t.link, \
-                    t.media[0], t.media[1], t.media[2], t.media[3]))
+                t.text, t.date, t.link))
         except Exception as e: print(e)
         # commit changes and close cursor
         self.conn.commit()
@@ -85,10 +84,10 @@ class DB_Connection():
         try:
             # insert incident
             command = '''INSERT INTO INCIDENT(INC_TWEET_ID, PLACE,
-                        ISINCIDENT, ISACCIDENT, ISOBSTACLE, ISDANGER)
-                        VALUES (%s, %s, %s, %s, %s, %s);'''
+                        ISACCIDENT, ISOBSTACLE, ISDANGER)
+                        VALUES (%s, %s, %s, %s, %s);'''
             self.cursor.execute(command, (t.tweetid, t.place, \
-                t.isIncident, t.isAccident, t.isObstacle, t.isDanger))
+                t.isAccident, t.isObstacle, t.isDanger))
         except Exception as e: print(e)
         # commit changes and close cursor
         self.conn.commit()
