@@ -9,25 +9,30 @@ Created on Sat Apr 24 21:28 2021 21:28
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
 """
 
-from tweepy import OAuthHandler, API, Cursor
 import json
-from urllib3.exceptions import ProtocolError
-import pandas as pd
 import time
-from keys import *
+import pandas as pd
+from tweepy import API, Cursor, OAuthHandler
+from urllib3.exceptions import ProtocolError
 import Tweet
+from keys import *
 
-def get_tweets(api):
+
+def get_tweets():
    """Executes the function to get the last 7 days tweets.
 
    Args:
-       api (tweepy.API): Gets the api with the authentication.
+       None.
 
    Returns:
        Tweet array: Returns an array with all the Tweets found.
    """
+   # consumer key authentication
+   auth = OAuthHandler(consumer_key, consumer_secret)
+   # access key authentication
+   auth.set_access_token(access_token, access_token_secret)
    # set up API with authentication handler
-   api = api
+   api = API(auth, wait_on_rate_limit=True)
    # Define the word to seach and date
    search_word = "(from:traficocpanama) OR (@traficocpanama) -filter:replies -filter:retweets"
    # Collect tweets
