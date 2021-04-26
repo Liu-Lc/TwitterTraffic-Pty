@@ -1,3 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Scraping file gets historical data from a certain seach of tweets
+using Selenium Chrome WebDriver and stores it in a PostgreSQL database.
+
+Created on Thy Jan 14 14:52 2021
+@author: Lucia Liu (lucia.liu@utp.ac.pa)
+"""
+
 import re, sys
 from time import sleep, time
 from selenium.webdriver.common.keys import Keys
@@ -11,12 +21,22 @@ import Tweet
 
 class Scrape():
     def __init__(self):
+        """Sets the database connection and initializes it.
+        """
         # initializing db
         self.db = DB_Connection()
         # db.create_tables()
 
     def get_tweet(self, card):
-        '''Extract data from tweet card.'''
+        """Extracts the data from the tweet card and sets the attributes.
+
+        Args:
+            card (Selenium WedElement): Group element obtained from Selenium Webdriver
+            (find_element functions).
+
+        Returns:
+            Tweet: Tweet object (see Tweet.py) with assigned attributes.
+        """
         ## CREATE EMPTY OBJECT
         t = Tweet() # empty object
         ## GET USER INFO AND TWEET TEXT
@@ -39,7 +59,16 @@ class Scrape():
         return t
 
     def start_scrape(self, date_from=None, date_until=None):
-        '''Method to start the scraping process'''
+        """Method that starts the scraping process and inserts the data
+        into the database.
+
+        Args:
+            date_from (DateTime Date, optional): Sets the date the search starts from. Defaults to None.
+            date_until (String, optional): Sets the date the search ends until. Defaults to None.
+
+        Returns:
+            None.
+        """
         ## start driver and go to twitter
         driver = Chrome('C:\\Users\\lucia\\chromedriver.exe')
         driver.get('https://www.twitter.com\login')
