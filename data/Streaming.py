@@ -1,6 +1,17 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Starts the streaming of tweets following the keywords:
+@traficocpanama, traficocpanama, trafico panama.
+See Listener on_status function to see processes done when 
+a new tweet is streamed.
+
+Created on Sun Apr 18 17:44 2021
+@author: Lucia Liu (lucia.liu@utp.ac.pa)
+"""
+
 from tweepy import API, OAuthHandler, Stream
 from urllib3.exceptions import ProtocolError
-# from DBConnect import DB_Connection  # class for connection the db
 from Listener import SListener  # imports the Streaming Listener
 from keys import *
 
