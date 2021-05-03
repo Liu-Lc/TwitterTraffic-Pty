@@ -14,7 +14,7 @@ import time
 import pandas as pd
 from tweepy import API, Cursor, OAuthHandler
 from urllib3.exceptions import ProtocolError
-import Tweet
+from Tweet import Tweet
 from keys import *
 
 
