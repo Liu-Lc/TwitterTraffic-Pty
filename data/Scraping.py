@@ -17,7 +17,7 @@ from getpass import getpass
 from IPython.display import clear_output
 from datetime import timedelta
 from DBConnect import DB_Connection
-import Tweet
+from Tweet import Tweet
 
 class Scrape():
     def __init__(self):
@@ -37,24 +37,25 @@ class Scrape():
         Returns:
             Tweet: Tweet object (see Tweet.py) with assigned attributes.
         """
-        ## CREATE EMPTY OBJECT
-        t = Tweet() # empty object
+        
         ## GET USER INFO AND TWEET TEXT
-        t.place = t.coords = '' # empty place and coords
-        t.userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
-        t.username = card.find_element_by_xpath('.//span').text
-        t.text = card.find_element_by_xpath('.//div[2]/div[2]/div[1]').text
+        place = coords = '' # empty place and coords
+        userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
+        username = card.find_element_by_xpath('.//span').text
+        text = card.find_element_by_xpath('.//div[2]/div[2]/div[1]').text
         ## GET TIME DATA
         try:
-            t.date = card.find_element_by_xpath('.//time').get_attribute('datetime')
+            date = card.find_element_by_xpath('.//time').get_attribute('datetime')
         except NoSuchElementException as e:
             # if it doesn't have date, means
             # it's an ad or something else
             return
         ## GET LINK
-        t.link = card.find_element_by_xpath('.//time/..').get_attribute('href')
+        link = card.find_element_by_xpath('.//time/..').get_attribute('href')
         # tweet id is in the tweet link
-        t.tweetid =  re.split('/', t.link)[5]
+        tweetid =  re.split('/', link)[5]
+        ## CREATE EMPTY OBJECT
+        t = Tweet(tweetid, userid, username, text, date, link) # empty object
         ## RETURN TWEET INFO
         return t
 

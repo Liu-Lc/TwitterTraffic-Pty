@@ -1,6 +1,4 @@
 class Tweet():
-    def __init__(self):
-        pass
     def __init__(self, tweetid, userid, username, text, date, link):
         self.tweetid = tweetid
         self.userid = userid
