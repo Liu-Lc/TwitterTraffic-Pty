@@ -83,9 +83,9 @@ class DB_Connection():
         self.cursor = self.conn.cursor()
         try:
             # insert incident
-            command = '''INSERT INTO INCIDENT(INC_TWEET_ID, PLACE,
+            command = '''INSERT INTO TWTINCIDENT(INC_TWEET_ID, INC_PLACE_ID,
                         ISACCIDENT, ISOBSTACLE, ISDANGER)
-                        VALUES (%s, %s, %s, %s, %s);'''
+                        VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;'''
             self.cursor.execute(command, (t.tweetid, t.place, \
                 t.isAccident, t.isObstacle, t.isDanger))
         except Exception as e: print(e)
@@ -169,7 +169,7 @@ class DB_Connection():
     def query_all(self):
         '''Returns the whole dataset.'''
         command = '''SELECT T.TWEET_ID, T.TWEET_USER_ID, U.USER_NAME, T.TWEET_TEXT, 
-                    T.TWEET_CREATED, T.TWEET_LINK, T.MEDIA1, T.MEDIA2, T.MEDIA3, T.MEDIA4 
+                    T.TWEET_CREATED, T.TWEET_LINK
                     FROM TWTTWEET AS T INNER JOIN TWTUSER AS U
                     ON T.TWEET_USER_ID=U.USER_ID ORDER BY T.TWEET_CREATED DESC;'''
         self.cursor = self.conn.cursor()
