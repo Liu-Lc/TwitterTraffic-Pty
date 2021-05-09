@@ -10,11 +10,16 @@ Created on Sun Apr 18 17:44 2021
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
 """
 
+import time
+from datetime import timedelta
+
 from tweepy import API, OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 from urllib3.exceptions import ProtocolError
-from keys import *
+
 import DBConnect
+import keys
+
 
 class SListener(StreamListener):
 
@@ -38,16 +43,17 @@ class SListener(StreamListener):
                 text = status.extended_tweet['full_text']
             else:
                 text = status.text
-            
+
             # link
-            link = 'https://www.twitter.com/' + str(user_id) + '/status/' + str(tweet_id)
+            link = 'https://www.twitter.com/' + \
+                str(user_id) + '/status/' + str(tweet_id)
 
             # Connect to database
             db = DBConnect.DB_Connection()
             db.connect(password=keys.db_pass)
-            
 
     # if theres an error
+
     def on_error(self, status_code):
         if status_code == 420:
             # Returning False in on_data disconnects the stream
@@ -56,9 +62,9 @@ class SListener(StreamListener):
 
 
 # consumer key authentication
-auth = OAuthHandler(consumer_key, consumer_secret)
+auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
 # access key authentication
-auth.set_access_token(access_token, access_token_secret)
+auth.set_access_token(keys.access_token, keys.access_token_secret)
 # set up API with authentication handler
 api = API(auth, wait_on_rate_limit=True)
 
