@@ -18,7 +18,7 @@ from Tweet import Tweet
 from keys import *
 
 
-def get_tweets():
+def get_tweets(from_date=None):
    """Executes the function to get the last 7 days tweets.
 
    Args:
@@ -35,6 +35,8 @@ def get_tweets():
    api = API(auth, wait_on_rate_limit=True)
    # Define the word to seach and date
    search_word = "(from:traficocpanama) OR (@traficocpanama) -filter:replies -filter:retweets"
+   if from_date!=None:
+       search_word += " since:" + from_date
    # Collect tweets
    tweets = Cursor(api.search,
                   q=search_word,
