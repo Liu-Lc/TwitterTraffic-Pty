@@ -13,12 +13,17 @@ Created on Sun Apr 18 17:44 2021
 import time
 from datetime import timedelta
 
+import pandas as pd
 from tweepy import API, OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 from urllib3.exceptions import ProtocolError
 
 import DBConnect
+import Detection
 import keys
+import Preprocessing
+import Updater
+import Tweet
 
 
 class SListener(StreamListener):
@@ -52,15 +57,16 @@ class SListener(StreamListener):
             db = DBConnect.DB_Connection()
             db.connect(password=keys.db_pass)
 
-    # if theres an error
 
+    # if theres an error
     def on_error(self, status_code):
         if status_code == 420:
             # Returning False in on_data disconnects the stream
             return False
 
 
-
+##### Prepare STREAMING
+print('Starting.')
 # consumer key authentication
 auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
 # access key authentication
@@ -77,7 +83,49 @@ stream = Stream(auth, listen)
 keywords = ['@traficocpanama,traficocpanama,trafico panama']
 # keywords = ['accidente']
 
-# begin collecting data
+
+##### Update Tweets if the system fails
+# get last date and format it
+db = DBConnect.DB_Connection()
+db.connect(password=keys.db_pass)
+
+# gets last date
+last_date = db.query_date()
+last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
+
+# get last week tweets
+print('Updating data.')
+past_tweets = Updater.get_tweets(from_date=last_date)
+
+# get tweets to dataframe
+# dict gets a dictionary of attributes and values
+data = pd.DataFrame([i.__dict__ for i in past_tweets])
+# get classification and category of each tweet
+data = Detection.get_classification(data, 'text')
+
+# gets last id
+last_id = db.query('''
+    SELECT max(inc_tweet_id) 
+    FROM public.twtincident;''')[0][0]
+
+## iterates through updater tweets
+for index, row in data[data.tweetid>last_id].iterrows():
+    # inserts tweet to db
+    db.insert_tweet(row)
+    # if the tweet is accident, inserts to database
+    if row.isIncident==1:
+        i = Tweet.Incident(row.tweetid, None, 
+            True if row.isAccident==1 else False, 
+            True if row.isObstacle==1 else False, 
+            True if row.isDanger==1 else False)
+        db.insert_incident(i)
+
+# closes connection
+db.close_connection()
+
+
+##### Begin collecting data
+print('Starting stream.')
 while True:
     # maintian connection unless interrupted
     try:
