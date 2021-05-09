@@ -1,11 +1,7 @@
 .gitignore
 others
-locations.xlsx
-extra.ipynb
 extra
-analysis
-sql
-data/keys.py
+all_files/keys.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
