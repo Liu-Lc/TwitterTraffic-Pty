@@ -4,7 +4,7 @@ import time, datetime
 
 class DB_Connection():
     def __init__(self):
-        self.connect()
+        # self.connect()
         # self.database = database
         # self.user = user
         pass
