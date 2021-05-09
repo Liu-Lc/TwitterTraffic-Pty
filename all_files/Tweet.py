@@ -6,3 +6,12 @@ class Tweet():
         self.text = text
         self.date = date
         self.link = link
+
+# class incident to add to DB
+class Incident:
+    def __init__(self, tweetid, place, isAccident, isObstacle, isDanger):
+        self.tweetid = tweetid
+        self.place = place
+        self.isAccident = isAccident
+        self.isObstacle = isObstacle
+        self.isDanger = isDanger
