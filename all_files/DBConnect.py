@@ -9,12 +9,13 @@ class DB_Connection():
         # self.user = user
         pass
     
-    def connect(self, database='traffictwt', user='postgres', password=getpass()):
+    def connect(self, database='traffictwt', user='postgres', password=None):
         '''Connection to a database.'''
         try:
+            if password==None: password = getpass()
             self.conn = ps.connect(database=database, user=user, password=password)
-            print('Connection succesful.')
-        except: print('Error connecting to database.')
+            return True
+        except: return False
 
     def create_tables(self):
         '''Creates table with tweet structure. '''
