@@ -53,9 +53,24 @@ class SListener(StreamListener):
             link = 'https://www.twitter.com/' + \
                 str(user_id) + '/status/' + str(tweet_id)
 
+            tweet = Tweet.Tweet(tweet_id, user_id, user_name, 
+                text, tweet_created, link)
+
             # Connect to database
             db = DBConnect.DB_Connection()
             db.connect(password=keys.db_pass)
+            db.insert_tweet(tweet)
+
+            clas = Detection.get_classification()
+            if row.isIncident==1:
+                i = Tweet.Incident(row.tweetid, None, 
+                    True if row.isAccident==1 else False, 
+                    True if row.isObstacle==1 else False, 
+                    True if row.isDanger==1 else False)
+                db.insert_incident(i)
+
+            db.close_connection()
+            print(text)
 
 
     # if theres an error
@@ -101,7 +116,7 @@ past_tweets = Updater.get_tweets(from_date=last_date)
 # dict gets a dictionary of attributes and values
 data = pd.DataFrame([i.__dict__ for i in past_tweets])
 # get classification and category of each tweet
-data = Detection.get_classification(data, 'text')
+data = Detection.get_classifications(data, 'text')
 
 # gets last id
 last_id = db.query('''
