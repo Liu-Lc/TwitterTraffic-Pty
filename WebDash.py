@@ -5,66 +5,17 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
+import plotly.graph_objects as go
+
+from TweetData import DBConnect, keys
+
+db = DBConnect.DB_Connection()
+db.connect(password=keys.db_pass)
 
 app = dash.Dash(__name__)
 
 head = html.Div([html.Link(rel="stylesheet",
           href="https://fonts.googleapis.com/css?family=Montserrat")])
-
-sidebar = html.Div([
-    html.Div([
-        html.H4('Búsqueda'),
-        html.Hr(),
-        html.Div([
-            html.P('Dropdown', style={'textAlign': 'center'}),
-            dcc.Dropdown(
-                options=[{
-                    'label': 'Value One',
-                    'value': 'value1'
-                }, {
-                    'label': 'Value Two',
-                    'value': 'value2'
-                }, {
-                    'label': 'Value Three',
-                    'value': 'value3'
-                }],
-                value=['value1'],  # default value
-                multi=True
-            ),
-            html.Br()
-        ])
-    ], className='pretty_container one-half column'),
-    html.Div([
-        html.H4('Reportes'),
-        html.Hr(),
-        # html.Blockquote(className="twitter-tweet", children=[
-        #     html.A("", href="https://twitter.com/Lc_L23/status/1348473789613535232?s=20")
-        # ]),
-        # html.Blockquote(className="twitter-tweet", children=[
-        #     html.A("", href="https://twitter.com/Lc_L23/status/1348418144038236160?ref_src=twsrc%5Etfw")
-        # ]),
-        # html.Blockquote(className="twitter-tweet", children=[
-        #     html.A("", href="https://twitter.com/Lc_L23/status/1348437846978400256?s=20")
-        # ]),
-        # html.Blockquote(className="twitter-tweet", children=[
-        #     html.A("", href="https://twitter.com/Lc_L23/status/1348437952439980033?s=20")
-        # ]),
-        ], className='pretty_container one-half column')
-], className='sidebar four columns')
-
-content = html.Div([
-    html.Div([
-    #     html.Div([
-    #         dcc.Graph(id='graph1')
-    #     ], className='pretty_container six columns'),
-    #     html.Div([
-    #         dcc.Graph(id='graph2')
-    #     ], className='pretty_container six columns')
-    # ], className='row'),
-    # html.Div([
-    #     dcc.Graph(id='map')
-    ], className='pretty_container')
-], className='seven columns')
 
 # html.Div(id='output_container', children=[]),
 # html.Br(),
@@ -79,32 +30,100 @@ app.layout = html.Div([
         html.Hr(),
     ], className='column'),
     html.Div([
-        html.Div([
+        # sección de la izquierda
+        html.Div([ 
+            # panel de búsqueda
             html.Div([
                 html.H4('Búsqueda'),
                 html.Hr()
             ], className='pretty_container one-half column'),
+            # panel de reportes
             html.Div([
                 html.H4('Reportes'),
                 html.Hr()
                 ], className='pretty_container one-half column')
         ], className='row four columns'),
 
-        html.Div([
-            html.Div([
+        # sección de la derecha
+        html.Div([ 
+            # sección de arriba con dos gráficas
+            html.Div([ 
                 html.Div([
-                    dcc.Graph(id='graph1')
+                    dcc.Dropdown(
+                        options=[{
+                            'label': 'Value One',
+                            'value': 'value1'
+                        }, {
+                            'label': 'Value Two',
+                            'value': 'value2'
+                        }, {
+                            'label': 'Value Three',
+                            'value': 'value3'
+                        }],
+                        value=['value1']
+                    ),
+                    # dcc.Graph(id='graph-area')
+                    # dcc.Interval(id='graph-area-update', interval=1000)
                 ], className='pretty_container six columns'),
                 html.Div([
-                    dcc.Graph(id='graph2')
+                    dcc.Dropdown(
+                        id='graph-time-options',
+                        options=[{
+                            'label': 'Resumen por día',
+                            'value': 'day'
+                        }, {
+                            'label': 'Resumen por semana',
+                            'value': 'week'
+                        }, {
+                            'label': 'Resumen por mes',
+                            'value': 'month'
+                        }],
+                        value='day'
+                    ),
+                    dcc.Graph(id='graph-time'),
+                    # dcc.Interval(id='graph-time-update', interval=1000)
                 ], className='pretty_container six columns')
             ], className='row'),
-            html.Div([
+            # sección de abajo con el mapa
+            html.Div([ 
                 dcc.Graph(id='map')
+            ], className='pretty_container'),
+            # sección bajo el mapa
+            html.Div([ 
+                dcc.Graph(id='others')
             ], className='pretty_container')
         ], className='eight columns')
     ], className='container'),
 ], id='mainContainer')
+
+@app.callback(
+    Output('graph-time', 'figure'),
+    [Input('graph-time-options','value')]
+)
+def graph_time(option):
+    query = '''SELECT DATE_TRUNC('%s', TWEET_CREATED) AS D, 
+                COUNT(TWEET_CREATED) FROM TWTTWEET 
+                GROUP BY D ORDER BY D; ''' % option
+    results = db.query(query)
+    df = pd.DataFrame(results, columns=[option, 'count'])
+    data = go.Bar(
+                x=df.iloc[:,0],
+                y=df.iloc[:,1],
+                name='Scatter',
+                )
+    X = df.iloc[-10:,0]
+    Y = df.iloc[-10:,1]
+    # Output is the figure with 'data' and 'layout'
+    return {
+        # data is a list
+        'data':[data],
+        'layout': go.Layout(
+            # axis update limits
+            xaxis = dict(range=[min(X), max(X)]),
+            yaxis = dict(range=[min(Y), max(Y)]),
+            height = 350,
+            margin = go.layout.Margin(autoexpand=True),
+        )}
 
 try:
     app.run_server()
