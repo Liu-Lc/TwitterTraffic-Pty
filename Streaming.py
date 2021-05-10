@@ -18,12 +18,8 @@ from tweepy import API, OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 from urllib3.exceptions import ProtocolError
 
-import DBConnect
-import Detection
-import keys
-import Preprocessing
-import Updater
-import Tweet
+from TweetData import DBConnect, keys, Tweet, \
+    Preprocessing, Updater, Detection
 
 
 class SListener(StreamListener):
@@ -53,8 +49,8 @@ class SListener(StreamListener):
             link = 'https://www.twitter.com/' + \
                 str(user_id) + '/status/' + str(tweet_id)
 
-            tweet = Tweet.Tweet(tweet_id, user_id, user_name, 
-                text, tweet_created, link)
+            tweet = Tweet.Tweet(tweet_id, user_id, user_name,
+                                text, tweet_created, link)
 
             # Connect to database
             db = DBConnect.DB_Connection()
@@ -62,16 +58,15 @@ class SListener(StreamListener):
             db.insert_tweet(tweet)
 
             clas = Detection.get_classification()
-            if row.isIncident==1:
-                i = Tweet.Incident(row.tweetid, None, 
-                    True if row.isAccident==1 else False, 
-                    True if row.isObstacle==1 else False, 
-                    True if row.isDanger==1 else False)
+            if row.isIncident == 1:
+                i = Tweet.Incident(row.tweetid, None,
+                                   True if row.isAccident == 1 else False,
+                                   True if row.isObstacle == 1 else False,
+                                   True if row.isDanger == 1 else False)
                 db.insert_incident(i)
 
             db.close_connection()
             print(text)
-
 
     # if theres an error
     def on_error(self, status_code):
@@ -80,7 +75,7 @@ class SListener(StreamListener):
             return False
 
 
-##### Prepare STREAMING
+# Prepare STREAMING
 print('Starting.')
 # consumer key authentication
 auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
@@ -99,7 +94,7 @@ keywords = ['@traficocpanama,traficocpanama,trafico panama']
 # keywords = ['accidente']
 
 
-##### Update Tweets if the system fails
+# Update Tweets if the system fails
 # get last date and format it
 db = DBConnect.DB_Connection()
 db.connect(password=keys.db_pass)
@@ -123,23 +118,23 @@ last_id = db.query('''
     SELECT max(inc_tweet_id) 
     FROM public.twtincident;''')[0][0]
 
-## iterates through updater tweets
-for index, row in data[data.tweetid>last_id].iterrows():
+# iterates through updater tweets
+for index, row in data[data.tweetid > last_id].iterrows():
     # inserts tweet to db
     db.insert_tweet(row)
     # if the tweet is accident, inserts to database
-    if row.isIncident==1:
-        i = Tweet.Incident(row.tweetid, None, 
-            True if row.isAccident==1 else False, 
-            True if row.isObstacle==1 else False, 
-            True if row.isDanger==1 else False)
+    if row.isIncident == 1:
+        i = Tweet.Incident(row.tweetid, None,
+                           True if row.isAccident == 1 else False,
+                           True if row.isObstacle == 1 else False,
+                           True if row.isDanger == 1 else False)
         db.insert_incident(i)
 
 # closes connection
 db.close_connection()
 
 
-##### Begin collecting data
+# Begin collecting data
 print('Starting stream.')
 while True:
     # maintian connection unless interrupted
