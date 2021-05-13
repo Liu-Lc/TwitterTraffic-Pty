@@ -30,7 +30,8 @@ p { font-size: 1.36rem; }
 #mainContainer {
   display: flex;
   flex-direction: column;
-  margin: 2%;
+  /* top-bottom 0 and right-left 2 */
+  margin: 0% 2%;
 }
 
 .container {

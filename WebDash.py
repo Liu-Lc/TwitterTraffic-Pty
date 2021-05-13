@@ -11,17 +11,13 @@ from TweetData import keys
 
 app = dash.Dash(__name__)
 
-head = html.Div([html.Link(rel="stylesheet",
-          href="https://fonts.googleapis.com/css?family=Montserrat")])
-
-# html.Div(id='output_container', children=[]),
-# html.Br(),
 # html.Script(src='widgets.js'),
 # html.Link(rel='stylesheet', href='styles.css')
 
 # app layout
 app.layout = html.Div([
-    head,
+    html.Link(rel="stylesheet",
+          href="https://fonts.googleapis.com/css?family=Montserrat"),
     html.Div([
         html.H1('Visualización de incidentes de tráfico'),
         html.Hr(),
@@ -85,6 +81,7 @@ app.layout = html.Div([
 ], id='mainContainer')
 
 
+## -----------------------------------------
 
 @app.callback(
     Output('graph-categ', 'figure'),
@@ -95,9 +92,9 @@ def graph_categ(option):
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT
-        COUNT(CASE WHEN I.ISACCIDENT THEN 1 END) AS ACCIDENTS,
-        COUNT(CASE WHEN I.ISOBSTACLE THEN 1 END) AS OBSTACLES,
-        COUNT(CASE WHEN I.ISDANGER THEN 1 END) AS DANGERS
+        COUNT(CASE WHEN I.ISACCIDENT THEN 1 END) AS accidentes,
+        COUNT(CASE WHEN I.ISOBSTACLE THEN 1 END) AS obstáculos,
+        COUNT(CASE WHEN I.ISDANGER THEN 1 END) AS peligros
     FROM TWTINCIDENT AS I LEFT JOIN TWTTWEET AS T
     ON I.INC_TWEET_ID=T.TWEET_ID
     WHERE T.TWEET_CREATED>(
@@ -125,10 +122,18 @@ def graph_categ(option):
     return {
         'data': [data], # data is a list
         'layout': go.Layout( # axis update limits
-            # xaxis=dict(range=[0, len(colnames)]),
-            # yaxis=dict(range=[0, max(Y)]),
-            height=350,
-            margin=go.layout.Margin(autoexpand=True),
+            title=go.layout.Title(
+                text='Incidentes por categoría',
+                y=1, yref='paper', yanchor='bottom',
+                pad={ 'b':20 },
+                font={ 'size': 20 },
+            ),
+            xaxis_title='Tipo de incidente',
+            xaxis_titlefont={ 'size': 16 },
+            xaxis_tickfont={ 'size': 13 },
+            yaxis_tickfont={ 'size': 13 },
+            height=300,
+            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10),
         )}
 
 
@@ -159,15 +164,29 @@ def graph_time(option):
     )
     X = df.iloc[-10:, 0]
     Y = df.iloc[-10:, 1]
+    ## XAxis layout
+    if option=='day': tickformat='%d/%m/%y'
+    elif option=='week': tickformat='S%V/%Y'
+    elif option=='month': tickformat='%m/%Y'
     # Output is the figure with 'data' and 'layout'
     return {
         'data': [data], # data is a list
         'layout': go.Layout( # axis update limits
-            title='Prueba',
+            title=go.layout.Title(
+                text='Incidentes por períodos',
+                y=1, yref='paper', yanchor='bottom',
+                pad={ 'b':20 },
+                font={ 'size': 20 },
+            ),
+            xaxis_title='Fecha',
+            xaxis_titlefont={ 'size': 16 },
+            xaxis_tickformat=tickformat,
+            xaxis_tickfont={ 'size': 13 },
+            yaxis_tickfont={ 'size': 13 },
             xaxis=dict(range=[min(X), max(X)]),
             yaxis=dict(range=[min(Y), max(Y)]),
-            height=350,
-            margin=go.layout.Margin(l=30, r=30, b=20, t=80, pad=4),
+            height=300,
+            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10),
         )}
 
 
