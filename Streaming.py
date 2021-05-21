@@ -29,8 +29,6 @@ class SListener(StreamListener):
     # initialize API
     def __init__(self, api=None, fprefix='streamer'):
         self.api = api or API()
-        # set db connection
-        # self.db = DB_Connection()
 
     # for each tweet streamed
     def on_status(self, status):
@@ -55,19 +53,19 @@ class SListener(StreamListener):
                                 text, tweet_created, link)
 
             # Connect to database
-            # db = DBConnect.DB_Connection()
-            # db.connect(password=keys.db_pass)
-            # db.insert_tweet(tweet)
+            db = DBConnect.DB_Connection()
+            db.connect(password=keys.db_pass)
+            db.insert_tweet(tweet)
 
-            # clas = Detection.get_classification()
-            # if row.isIncident == 1:
-            #     i = Tweet.Incident(row.tweetid, None,
-            #                        True if row.isAccident == 1 else False,
-            #                        True if row.isObstacle == 1 else False,
-            #                        True if row.isDanger == 1 else False)
-                # db.insert_incident(i)
+            clas = Detection.get_classification(text)
+            if clas['isIncident'] == 1:
+                i = Tweet.Incident(tweet_id, None,
+                                   True if clas['isAccident'] == 1 else False,
+                                   True if clas['isObstacle'] == 1 else False,
+                                   True if clas['isDanger'] == 1 else False)
+                db.insert_incident(i)
 
-            # db.close_connection()
+            db.close_connection()
             print(text)
 
     # if theres an error
@@ -76,17 +74,6 @@ class SListener(StreamListener):
             # Returning False in on_data disconnects the stream
             return False
 
-    def close(self):
-        print(self.running)
-        if self.running: 
-            self.running = False
-            # self._thread.join()
-
-
-def func():
-    print('Start')
-    time.sleep(5)
-    print('Ended')
 
 if __name__=='__main__':
     # Prepare STREAMING
@@ -105,69 +92,54 @@ if __name__=='__main__':
 
     # set keywords
     keywords = ['@traficocpanama,traficocpanama,trafico panama']
-    # keywords = ['accidente']
-
+    # keywords = ['accidente'] 
 
     # Update Tweets if the system fails
     # get last date and format it
-    # db = DBConnect.DB_Connection()
-    # db.connect(password=keys.db_pass)
+    db = DBConnect.DB_Connection()
+    db.connect(password=keys.db_pass)
 
-    # # gets last date
-    # last_date = db.query_date()
-    # last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
+    # gets last date
+    last_date = db.query_date()
+    last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
 
-    # # get last week tweets
-    # print('Updating data.')
-    # past_tweets = Updater.get_tweets(from_date=last_date)
+    # get last week tweets
+    print('Updating data.')
+    past_tweets = Updater.get_tweets(from_date=last_date)
 
-    # # get tweets to dataframe
-    # # dict gets a dictionary of attributes and values
-    # data = pd.DataFrame([i.__dict__ for i in past_tweets])
-    # # get classification and category of each tweet
-    # data = Detection.get_classifications(data, 'text')
+    # get tweets to dataframe
+    # dict gets a dictionary of attributes and values
+    data = pd.DataFrame([i.__dict__ for i in past_tweets])
+    # get classification and category of each tweet
+    data = Detection.get_classifications(data, 'text')
 
-    # # gets last id
-    # last_id = db.query('''
-    #     SELECT max(inc_tweet_id) 
-    #     FROM public.twtincident;''')[0][0]
+    # gets last id
+    last_id = db.query('''
+        SELECT max(inc_tweet_id) 
+        FROM public.twtincident;''')[0][0]
 
-    # # iterates through updater tweets
-    # for index, row in data[data.tweetid > last_id].iterrows():
-    #     # inserts tweet to db
-    #     db.insert_tweet(row)
-    #     # if the tweet is accident, inserts to database
-    #     if row.isIncident == 1:
-    #         i = Tweet.Incident(row.tweetid, None,
-    #                            True if row.isAccident == 1 else False,
-    #                            True if row.isObstacle == 1 else False,
-    #                            True if row.isDanger == 1 else False)
-    #         db.insert_incident(i)
+    # iterates through updater tweets
+    for index, row in data[data.tweetid > last_id].iterrows():
+        # inserts tweet to db
+        db.insert_tweet(row)
+        # if the tweet is accident, inserts to database
+        if row.isIncident == 1:
+            i = Tweet.Incident(row.tweetid, None,
+                               True if row.isAccident == 1 else False,
+                               True if row.isObstacle == 1 else False,
+                               True if row.isDanger == 1 else False)
+            db.insert_incident(i)
 
-    # # closes connection
-    # db.close_connection()
+    # closes connection
+    db.close_connection()
 
     # Begin collecting data
     print('Starting stream.')
-    # while True:
-    #     # maintian connection unless interrupted
-    #     try:
-    #         stream.filter(track=keywords)
-    #     # reconnect automantically if error arise
-    #     # due to unstable network connection
-    #     except (ProtocolError, AttributeError):
-    #         continue
 
     try: 
         p = Process(target=stream.filter, 
             kwargs={'track':keywords, 'is_async':True})
         p.start()
-        # stream.filter(track=keywords, is_async=True)
-        # stream.disconnect()
-        time.sleep(10)
-        print('New process')
-        p2 = Process(target=func)
-        p2.start()
         if input("Exit: ")=='q':
             print('Terminating.')
             p.terminate()
@@ -176,5 +148,4 @@ if __name__=='__main__':
     # reconnect automantically if error arise
     # due to unstable network connection
     except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
-        # stream.disconnect()
         print('CLOSING.')
