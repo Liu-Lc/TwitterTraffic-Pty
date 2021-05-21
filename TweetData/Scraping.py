@@ -17,7 +17,9 @@ from getpass import getpass
 from IPython.display import clear_output
 from datetime import timedelta
 from DBConnect import DB_Connection
-from Tweet import Tweet
+import Tweet
+import Detection
+
 
 class Scrape():
     def __init__(self):
@@ -25,6 +27,7 @@ class Scrape():
         """
         # initializing db
         self.db = DB_Connection()
+        self.db.connect()
         # db.create_tables()
 
     def get_tweet(self, card):
@@ -55,7 +58,7 @@ class Scrape():
         # tweet id is in the tweet link
         tweetid =  re.split('/', link)[5]
         ## CREATE EMPTY OBJECT
-        t = Tweet(tweetid, userid, username, text, date, link) # empty object
+        t = Tweet.Tweet(tweetid, userid, username, text, date, link) # empty object
         ## RETURN TWEET INFO
         return t
 
@@ -82,7 +85,7 @@ class Scrape():
         print('Logging in.')
         sleep(2)
         # temp variables
-        count = 0; starttime = time()
+        count = 0; count_i = 0; starttime = time()
         exit_var = False
         ## SEARCH QUERY
         print('Searching.')
@@ -122,14 +125,23 @@ class Scrape():
                         # gets the tweet info from a card
                         tweet = self.get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
                         # checks if the tweet is valid
-                        if len(self.db.query_id(tweet.tweetid))==0 or tweet==None:
+                        if len(self.db.query_id(tweet.tweetid))!=0 or tweet!=None:
                             # inserts tweet in database
                             self.db.insert_tweet(tweet)
                             count += 1 # counter for tweets obtained
                             clear_output(wait=True)
+                            clas = Detection.get_classification(tweet.text)
+                            if clas['isIncident'] == 1:
+                                i = Tweet.Incident(tweet.tweetid, None,
+                                                True if clas['isAccident'] == 1 else False,
+                                                True if clas['isObstacle'] == 1 else False,
+                                                True if clas['isDanger'] == 1 else False)
+                                self.db.insert_incident(i)
+                                count_i += 1
                             nowtime = time()
                             # resume
                             sys.stdout.write('\r' + 'Tweets obtained: ' + str(count) + \
+                                '\tIncidents: ' + str(count_i) + \
                                 '\tETA:' + str(timedelta(seconds=nowtime-starttime)))
                             sys.stdout.flush()
                     # if the card is unavailable or something, skips
