@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import psycopg2 as ps
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 
 from TweetData import keys
 
@@ -15,34 +15,36 @@ app = dash.Dash(__name__)
 # html.Link(rel='stylesheet', href='styles.css')
 
 # app layout
-app.layout = html.Div([
+app.layout = html.Div(id='mainContainer', children=[
     html.Link(rel="stylesheet",
           href="https://fonts.googleapis.com/css?family=Montserrat"),
-    html.Div([
+    html.Div(className='column', children=[
         html.H1('Visualización de incidentes de tráfico'),
         html.Hr(),
-    ], className='column'),
-    html.Div([
+    ]),
+    html.Div(className='container', children=[
         # sección de la izquierda
-        html.Div([
+        html.Div(className='row four columns', children=[
             # panel de reportes
-            html.Div([
+            html.Div(className='pretty_container column', children=[
                 html.H4('Reportes'),
-                html.Hr()
-            ], className='pretty_container one-half column'),
-            # panel de búsqueda
-            html.Div([
-                html.H4('Búsqueda'),
-                html.Hr()
-            ], className='pretty_container one-half column')
-        ], className='row four columns'),
+                html.Hr(),
+                html.Button('Click', id='button', className='column'),
+                html.Div(className='column', children=[
+                    html.Ol(id='tweets-list',
+                        className='tweet-list', children=[]),
+                ]),
+                dcc.Interval(id='get-tweets-interval', interval=5000),
+                html.Script(src='https://platform.twitter.com/widgets.js')
+            ]),
+        ]),
 
         # sección de la derecha
-        html.Div([
+        html.Div(className='eight columns', children=[
             # sección de arriba con dos gráficas
-            html.Div([
+            html.Div(className='row', children=[
                 # gráfica izquierda
-                html.Div([
+                html.Div(className='pretty_container six columns', children=[
                     dcc.Dropdown(id='graph-categ-options', options=[
                             {'label': 'Diario', 'value': 'day'},
                             {'label': 'Semanal', 'value': 'week'},
@@ -53,9 +55,9 @@ app.layout = html.Div([
                     ),
                     dcc.Graph(id='graph-categ'),
                     # dcc.Interval(id='graph-area-update', interval=1000)
-                ], className='pretty_container six columns'),
+                ]),
                 # gráfica derecha
-                html.Div([
+                html.Div(className='pretty_container six columns', children=[
                     dcc.Dropdown(id='graph-time-options', options=[
                             {'label': 'Resumen por día', 'value': 'day'},
                             {'label': 'Resumen por semana', 'value': 'week'},
@@ -65,28 +67,69 @@ app.layout = html.Div([
                     ),
                     dcc.Graph(id='graph-time'),
                     # dcc.Interval(id='graph-time-update', interval=1000)
-                ], className='pretty_container six columns')
-            ], className='row'),
+                ])
+            ]),
             # sección de abajo con el mapa
-            html.Div([
+            html.Div(className='pretty_container', children=[
                 dcc.Graph(id='map')
-            ], className='pretty_container'),
+            ]),
             # sección bajo el mapa
-            html.Div([
+            html.Div(className='pretty_container', children=[
                 dcc.Graph(id='others')
-            ], className='pretty_container')
-        ], className='eight columns')
+            ])
+        ])
 
-    ], className='container'),
-], id='mainContainer')
+    ]),
+])
 
 
 ## -----------------------------------------
 
 @app.callback(
+    Output('tweets-list', 'children'),
+    # [Input('get-tweets-interval', 'n_intervals'),
+    [Input('button', 'n_clicks'),
+    Input('tweets-list', 'children')]
+)
+## Get streaming tweets
+def update_tweets(interval, children):
+    conn = ps.connect(
+        database='traffictwt', user='postgres', password=keys.db_pass)
+    cursor = conn.cursor()
+    q = '''SELECT U.USER_NAME AS USERNAME, T.TWEET_USER_ID AS USERID, 
+            T.TWEET_TEXT AS TEXT FROM TWTTWEET AS T 
+            LEFT JOIN TWTUSER AS U ON T.TWEET_USER_ID=U.USER_ID
+            RIGHT JOIN TWTINCIDENT AS I ON T.TWEET_ID=I.INC_TWEET_ID
+            ORDER BY TWEET_CREATED DESC LIMIT 10; '''
+    cursor.execute(q)
+    results = cursor.fetchall()
+    colnames = [desc[0] 
+        for desc in cursor.description]
+    cursor.close()
+    conn.close()
+
+    df = pd.DataFrame(results, columns=colnames)
+    block = []
+
+    for index, tweet in df.iterrows():
+        block += [html.Li(className='tweet-card', children=[
+                html.Div(className='tweet-content', children=[
+                    html.Span(
+                        html.Strong(tweet.username),
+                    ),
+                    html.Span(' @' + tweet.userid),
+                    html.P(className='tweet-text', children=[tweet.text])
+                ])
+            ])]
+
+    if children==None: return block
+    else: return block + children
+
+@app.callback(
     Output('graph-categ', 'figure'),
     [Input('graph-categ-options', 'value')]
 )
+## Gráfica de INCIDENTES POR CATEGORÍA
 def graph_categ(option):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)
@@ -141,6 +184,7 @@ def graph_categ(option):
     Output('graph-time', 'figure'),
     [Input('graph-time-options', 'value')]
 )
+## Gráfica de INCIDENTES POR PERÍODO DE TIEMPO
 def graph_time(option):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)

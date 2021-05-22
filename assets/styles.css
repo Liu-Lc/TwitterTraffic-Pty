@@ -2,9 +2,30 @@
   font-family: "Montserrat", Roboto, "Segoe UI", sans-serif;
 }
 
-div.twitter-tweet-rendered {
-  width: 5% !important;
-  min-width: 180px !important;
+/* Tweets content structure */
+.tweet-list {
+  list-style: none;
+  padding: 0;
+}
+.tweet-card {
+  border-radius: 10px;
+  border: 1px solid #e6ecf0;
+  background-color: #fff;
+  padding: 15px 20px;
+  margin: 5px 0px;
+}
+.tweet-content {
+  font-family: 'Segoe UI', 'Helvetica';
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: normal;
+}
+.tweet-text {
+  font-family: 'Segoe UI', 'Helvetica';
+  padding: 0;
+  margin: 0;
+  margin-top: 5px;
+  font-size: 13px;
 }
 
 h1, h2, h3, h4, h5, h6 {
