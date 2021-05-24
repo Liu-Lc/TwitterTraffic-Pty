@@ -11,6 +11,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
+import plotly.colors as pcol
 import plotly.express as px
 import plotly.graph_objects as go
 import psycopg2 as ps
@@ -19,7 +20,7 @@ from wordcloud import WordCloud
 
 from io import BytesIO
 import base64
-import re
+import re, random
 
 from TweetData import keys
 
@@ -63,19 +64,19 @@ app.layout = html.Div(id='mainContainer', children=[
             html.Div(className='row', children=[
                 # gráfica izquierda
                 html.Div(className='pretty_container six columns', children=[
-                    dcc.Dropdown(id='type-options', options=[
+                    dcc.Dropdown(id='type-options', className='dropdown', options=[
                             {'label': 'Incidentes por categoría', 'value': 'categ'},
                             {'label': 'Incidentes por período de tiempo', 'value': 'time'}
                         ],
                         value='categ'
                     ),
-                    dcc.Dropdown(id='subtype-options'),
+                    dcc.Dropdown(id='subtype-options', className='dropdown'),
                     dcc.Graph(id='graph-type'),
                 ]),
                 # gráfica derecha
-                html.Div(id='wordcloud-graph',
-                    className='pretty_container six columns', children=[
-                        dcc.Dropdown(id='wordcloud-options', options=[
+                html.Div(className='pretty_container six columns', children=[
+                        dcc.Dropdown(id='wordcloud-options', className='dropdown', 
+                            options=[
                                 {'label': 'Diario', 'value': 'day'},
                                 {'label': 'Semanal', 'value': 'week'},
                                 {'label': 'Mensual', 'value': 'month'},
@@ -83,8 +84,8 @@ app.layout = html.Div(id='mainContainer', children=[
                             ],
                             value='day'
                         ),
-                        # dcc.Graph(id='graph-wordcloud'),
-                        html.Img(id="image-wordcloud"),
+                        dcc.Graph(id='graph-wordcloud'),
+                        # html.Img(id="image-wordcloud"),
                 ]),
                 ## These intervals just put one?
                 dcc.Interval(id='graphs-update', interval=5000)
@@ -248,7 +249,7 @@ def graph_type(type, subtype):
 
 
 @app.callback(
-    Output('image-wordcloud', 'src'),
+    Output('graph-wordcloud', 'figure'),
     [Input('wordcloud-options', 'value')]
     # Input('graphs-update', 'n_intervals')]
 )
@@ -270,15 +271,43 @@ def graph_wordcloud(option):
     cursor.close()
     conn.close()
 
-    tweets = ' '.join([t[0] for t in results])
-    tweets = ' '.join(re.findall('([A-Z]\S+)', tweets))
+    tweets = [word for word in [t[0].split(' ') for t in results]][:30]
+    print(tweets)
+    # tweets = ' '.join(re.findall('([A-Z]\S+)', tweets))
 
-    img = BytesIO()
-    wc = WordCloud(background_color='white', 
-        width=350, height=300).generate(tweets)
-    wc.to_image().save(img, format='PNG')
-    return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
+    colors = [pcol.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for i in range(30)]
+    weights = [random.randint(15, 35) for i in range(30)]
 
+    data = go.Scatter(x=[random.choices(range(30), k=30)],
+                    y=[random.choices(range(30), k=30)],
+                    mode='text',
+                    text=tweets,
+                    marker={'opacity': 0.3},
+                    textfont={'size': weights,
+                            'color': colors})
+   
+    return go.Figure(data = [data], 
+        layout = go.Layout(
+            title=go.layout.Title(
+                text='Incidentes por %s' % ('categoría' if type=='categ' else 'períodos'),
+                y=1, yref='paper', yanchor='bottom',
+                pad={ 'b':20 },
+                font={ 'size': 20 },
+            ),
+            xaxis={
+                'showgrid': False, 'showticklabels': False, 'zeroline': False
+            },
+            yaxis={
+                'showgrid': False, 'showticklabels': False, 'zeroline': False
+            },
+            # xaxis_title='Tipo de incidente' if type=='categ' else 'Fecha',
+            # xaxis_titlefont={ 'size': 16 },
+            # xaxis_tickfont={ 'size': 13 },
+            # yaxis_tickfont={ 'size': 13 },
+            height=300,
+            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10)
+        ))
+    
 
 try:
     app.run_server()
