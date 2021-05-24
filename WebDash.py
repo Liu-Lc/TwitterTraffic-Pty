@@ -20,9 +20,10 @@ from wordcloud import WordCloud
 
 from io import BytesIO
 import base64
-import re, random
+import re, random, sys
 
-from TweetData import keys
+sys.path.append('./TweetData')
+from TweetData import keys, Preprocessing
 
 
 headers = ['tweetid', 'userid', 'username', 'text', 'link']
@@ -48,13 +49,12 @@ app.layout = html.Div(id='mainContainer', children=[
             html.Div(className='pretty_container column', children=[
                 html.H4('Reportes'),
                 html.Hr(),
-                html.Button('Generate', id='button'),
                 html.Div(className='column', children=[
                     html.Ol(id='tweets-list',
                         className='tweet-list', children=[]),
                 ]),
+                html.Button('Generate', id='button', className='column'),
                 dcc.Interval(id='get-tweets-interval', interval=5000),
-                html.Script(src='https://platform.twitter.com/widgets.js')
             ]),
         ]),
 
@@ -71,7 +71,9 @@ app.layout = html.Div(id='mainContainer', children=[
                         value='categ'
                     ),
                     dcc.Dropdown(id='subtype-options', className='dropdown'),
-                    dcc.Graph(id='graph-type'),
+                    html.Div(className='background-smaller', children=[
+                        dcc.Graph(id='graph-type', className='graph'),
+                    ]),
                 ]),
                 # gráfica derecha
                 html.Div(className='pretty_container six columns', children=[
@@ -84,8 +86,10 @@ app.layout = html.Div(id='mainContainer', children=[
                             ],
                             value='day'
                         ),
-                        dcc.Graph(id='graph-wordcloud'),
-                        # html.Img(id="image-wordcloud"),
+                        # dcc.Graph(id='graph-wordcloud'),
+                        html.Div(className='background-rectangle', children=[
+                            html.Img(id="image-wordcloud", className='image'),
+                        ]),
                 ]),
                 ## These intervals just put one?
                 dcc.Interval(id='graphs-update', interval=5000)
@@ -118,7 +122,7 @@ def update_tweets(interval, children):
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME,
-            USER_ID AS USERID, TWEET_TEXT AS TEXT 
+            USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
             FROM TWEET WHERE ISINCIDENT=TRUE
             ORDER BY TWEET_ID DESC LIMIT 10; '''
     cursor.execute(q)
@@ -131,7 +135,7 @@ def update_tweets(interval, children):
     global tweets_df
     df = pd.DataFrame(results, columns=colnames)
 
-    if len(tweets_df)>0:
+    if len(tweets_df)>0 and len(children)>0:
         new_data = df[df.tweetid > max(tweets_df.tweetid)].sort_values('tweetid', 
             ascending=False).copy()
     else: new_data = df.copy()
@@ -143,13 +147,15 @@ def update_tweets(interval, children):
 
     for index, tweet in new_data.iterrows():
         block += [html.Li(className='tweet-card', children=[
-                html.Div(className='tweet-content', children=[
-                    html.Span(
-                        html.Strong(tweet.username),
-                    ),
-                    html.Span(' @' + tweet.userid),
-                    html.P(className='tweet-text', children=[tweet.text])
-                ])
+                html.A(className='tweet-link', href=tweet.link, children=[
+                    html.Div(className='tweet-content', children=[
+                        html.Span(
+                            html.Strong(tweet.username),
+                        ),
+                        html.Span(' @' + tweet.userid),
+                        html.P(className='tweet-text', children=[tweet.text])
+                    ]),
+                ]),
             ])]
 
     if children==None: return block
@@ -249,7 +255,7 @@ def graph_type(type, subtype):
 
 
 @app.callback(
-    Output('graph-wordcloud', 'figure'),
+    Output('image-wordcloud', 'src'),
     [Input('wordcloud-options', 'value')]
     # Input('graphs-update', 'n_intervals')]
 )
@@ -271,42 +277,13 @@ def graph_wordcloud(option):
     cursor.close()
     conn.close()
 
-    tweets = [word for word in [t[0].split(' ') for t in results]][:30]
-    print(tweets)
-    # tweets = ' '.join(re.findall('([A-Z]\S+)', tweets))
+    tweets = ' '.join([Preprocessing.preprocess(t[0]) for t in results])
 
-    colors = [pcol.DEFAULT_PLOTLY_COLORS[random.randrange(1, 10)] for i in range(30)]
-    weights = [random.randint(15, 35) for i in range(30)]
-
-    data = go.Scatter(x=[random.choices(range(30), k=30)],
-                    y=[random.choices(range(30), k=30)],
-                    mode='text',
-                    text=tweets,
-                    marker={'opacity': 0.3},
-                    textfont={'size': weights,
-                            'color': colors})
-   
-    return go.Figure(data = [data], 
-        layout = go.Layout(
-            title=go.layout.Title(
-                text='Incidentes por %s' % ('categoría' if type=='categ' else 'períodos'),
-                y=1, yref='paper', yanchor='bottom',
-                pad={ 'b':20 },
-                font={ 'size': 20 },
-            ),
-            xaxis={
-                'showgrid': False, 'showticklabels': False, 'zeroline': False
-            },
-            yaxis={
-                'showgrid': False, 'showticklabels': False, 'zeroline': False
-            },
-            # xaxis_title='Tipo de incidente' if type=='categ' else 'Fecha',
-            # xaxis_titlefont={ 'size': 16 },
-            # xaxis_tickfont={ 'size': 13 },
-            # yaxis_tickfont={ 'size': 13 },
-            height=300,
-            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10)
-        ))
+    img = BytesIO()
+    wc = WordCloud(background_color='white', 
+        width=350, height=250).generate(tweets)
+    wc.to_image().save(img, format='PNG')
+    return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
     
 
 try:

@@ -7,6 +7,9 @@
   list-style: none;
   padding: 0;
 }
+.tweet-link {
+  text-decoration: none;
+}
 .tweet-card {
   border-radius: 10px;
   border: 1px solid #e6ecf0;
@@ -19,6 +22,7 @@
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
+  color: black;
 }
 .tweet-text {
   font-family: 'Segoe UI', 'Helvetica';
@@ -30,6 +34,33 @@
 
 .dropdown {
   font-size: 15px;
+}
+
+.background-rectangle {
+  height: calc(100% - 36px);
+  width: 100%;
+  background-color: white;
+  display: flex;
+}
+
+.background-smaller {
+  height: calc(100% - 72px);
+  background-color: white;
+  display: flex;
+}
+
+.image {
+  width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  align-self: center;
+}
+
+.graph {
+  width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  align-self: center;
 }
 
 h1, h2, h3, h4, h5, h6 {
