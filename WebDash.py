@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+
+Created on 
+@author: Lucia Liu (lucia.liu@utp.ac.pa)
+"""
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -5,9 +14,18 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import psycopg2 as ps
-from dash.dependencies import Input, Output, State, ClientsideFunction
+from dash.dependencies import ClientsideFunction, Input, Output, State
+from wordcloud import WordCloud
+
+from io import BytesIO
+import base64
+import re
 
 from TweetData import keys
+
+
+headers = ['tweetid', 'userid', 'username', 'text', 'link']
+tweets_df = pd.DataFrame(columns=headers)
 
 app = dash.Dash(__name__)
 
@@ -29,7 +47,7 @@ app.layout = html.Div(id='mainContainer', children=[
             html.Div(className='pretty_container column', children=[
                 html.H4('Reportes'),
                 html.Hr(),
-                html.Button('Click', id='button', className='column'),
+                html.Button('Generate', id='button'),
                 html.Div(className='column', children=[
                     html.Ol(id='tweets-list',
                         className='tweet-list', children=[]),
@@ -45,38 +63,40 @@ app.layout = html.Div(id='mainContainer', children=[
             html.Div(className='row', children=[
                 # gráfica izquierda
                 html.Div(className='pretty_container six columns', children=[
-                    dcc.Dropdown(id='graph-categ-options', options=[
-                            {'label': 'Diario', 'value': 'day'},
-                            {'label': 'Semanal', 'value': 'week'},
-                            {'label': 'Mensual', 'value': 'month'},
-                            {'label': 'Anual', 'value': 'year'}
+                    dcc.Dropdown(id='type-options', options=[
+                            {'label': 'Incidentes por categoría', 'value': 'categ'},
+                            {'label': 'Incidentes por período de tiempo', 'value': 'time'}
                         ],
-                        value='day'
+                        value='categ'
                     ),
-                    dcc.Graph(id='graph-categ'),
-                    # dcc.Interval(id='graph-area-update', interval=1000)
+                    dcc.Dropdown(id='subtype-options'),
+                    dcc.Graph(id='graph-type'),
                 ]),
                 # gráfica derecha
-                html.Div(className='pretty_container six columns', children=[
-                    dcc.Dropdown(id='graph-time-options', options=[
-                            {'label': 'Resumen por día', 'value': 'day'},
-                            {'label': 'Resumen por semana', 'value': 'week'},
-                            {'label': 'Resumen por mes', 'value': 'month'}
-                        ],
-                        value='day'
-                    ),
-                    dcc.Graph(id='graph-time'),
-                    # dcc.Interval(id='graph-time-update', interval=1000)
-                ])
+                html.Div(id='wordcloud-graph',
+                    className='pretty_container six columns', children=[
+                        dcc.Dropdown(id='wordcloud-options', options=[
+                                {'label': 'Diario', 'value': 'day'},
+                                {'label': 'Semanal', 'value': 'week'},
+                                {'label': 'Mensual', 'value': 'month'},
+                                {'label': 'Anual', 'value': 'year'}
+                            ],
+                            value='day'
+                        ),
+                        # dcc.Graph(id='graph-wordcloud'),
+                        html.Img(id="image-wordcloud"),
+                ]),
+                ## These intervals just put one?
+                dcc.Interval(id='graphs-update', interval=5000)
             ]),
             # sección de abajo con el mapa
             html.Div(className='pretty_container', children=[
                 dcc.Graph(id='map')
             ]),
             # sección bajo el mapa
-            html.Div(className='pretty_container', children=[
-                dcc.Graph(id='others')
-            ])
+            # html.Div(className='pretty_container', children=[
+            #     dcc.Graph(id='others')
+            # ])
         ])
 
     ]),
@@ -96,11 +116,10 @@ def update_tweets(interval, children):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
-    q = '''SELECT U.USER_NAME AS USERNAME, T.TWEET_USER_ID AS USERID, 
-            T.TWEET_TEXT AS TEXT FROM TWTTWEET AS T 
-            LEFT JOIN TWTUSER AS U ON T.TWEET_USER_ID=U.USER_ID
-            RIGHT JOIN TWTINCIDENT AS I ON T.TWEET_ID=I.INC_TWEET_ID
-            ORDER BY TWEET_CREATED DESC LIMIT 10; '''
+    q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME,
+            USER_ID AS USERID, TWEET_TEXT AS TEXT 
+            FROM TWEET WHERE ISINCIDENT=TRUE
+            ORDER BY TWEET_ID DESC LIMIT 10; '''
     cursor.execute(q)
     results = cursor.fetchall()
     colnames = [desc[0] 
@@ -108,10 +127,20 @@ def update_tweets(interval, children):
     cursor.close()
     conn.close()
 
+    global tweets_df
     df = pd.DataFrame(results, columns=colnames)
+
+    if len(tweets_df)>0:
+        new_data = df[df.tweetid > max(tweets_df.tweetid)].sort_values('tweetid', 
+            ascending=False).copy()
+    else: new_data = df.copy()
+
+    tweets_df = tweets_df.merge(new_data, 
+        how='outer').sort_values('tweetid', ascending=False)
+    
     block = []
 
-    for index, tweet in df.iterrows():
+    for index, tweet in new_data.iterrows():
         block += [html.Li(className='tweet-card', children=[
                 html.Div(className='tweet-content', children=[
                     html.Span(
@@ -125,27 +154,55 @@ def update_tweets(interval, children):
     if children==None: return block
     else: return block + children
 
+
 @app.callback(
-    Output('graph-categ', 'figure'),
-    [Input('graph-categ-options', 'value')]
+    [Output('subtype-options', 'options'),
+    Output('subtype-options', 'value')],
+    [Input('type-options', 'value')] 
 )
-## Gráfica de INCIDENTES POR CATEGORÍA
-def graph_categ(option):
+## Dropdown options
+def type_option(option): 
+    if option=='categ':
+        options=[
+                    {'label': 'Diario', 'value': 'day'},
+                    {'label': 'Semanal', 'value': 'week'},
+                    {'label': 'Mensual', 'value': 'month'},
+                    {'label': 'Anual', 'value': 'year'}
+                ]
+    elif option=='time':
+        options=[
+                    {'label': 'Resumen por día', 'value': 'day'},
+                    {'label': 'Resumen por semana', 'value': 'week'},
+                    {'label': 'Resumen por mes', 'value': 'month'}
+                ]
+    return options, 'day'
+
+
+@app.callback(
+    Output('graph-type', 'figure'),
+    [Input('type-options', 'value'),
+    Input('subtype-options', 'value')]
+)
+## Gráfica de INCIDENTES POR CATEGORÍA O POR PERÍODOS
+def graph_type(type, subtype):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
-    q = '''SELECT
-        COUNT(CASE WHEN I.ISACCIDENT THEN 1 END) AS accidentes,
-        COUNT(CASE WHEN I.ISOBSTACLE THEN 1 END) AS obstáculos,
-        COUNT(CASE WHEN I.ISDANGER THEN 1 END) AS peligros
-    FROM TWTINCIDENT AS I LEFT JOIN TWTTWEET AS T
-    ON I.INC_TWEET_ID=T.TWEET_ID
-    WHERE T.TWEET_CREATED>(
-        SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
-        FROM TWTTWEET
-    ); ''' % (
-        (7 if option=='week' else 1), 
-        'day' if option=='week' else option)
+    if type=='categ':
+        q = '''SELECT
+            COUNT(CASE WHEN ISACCIDENT THEN 1 END) AS accidentes,
+            COUNT(CASE WHEN ISOBSTACLE THEN 1 END) AS obstáculos,
+            COUNT(CASE WHEN ISDANGER THEN 1 END) AS peligros
+        FROM TWEET WHERE TWEET_CREATED>(
+            SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
+            FROM TWEET
+        ); ''' % (
+            (7 if subtype=='week' else 1), 
+            'day' if subtype=='week' else subtype)
+    elif type=='time':
+        q = '''SELECT DATE_TRUNC('%s', TWEET_CREATED) AS D, 
+                    COUNT(TWEET_CREATED) FROM TWEET 
+                    GROUP BY D ORDER BY D; ''' % (subtype)
     cursor.execute(q)
     results = cursor.fetchall()
     colnames = [desc[0] 
@@ -154,24 +211,34 @@ def graph_categ(option):
     conn.close()
 
     df = pd.DataFrame(results, columns=colnames)
-    Y = df.iloc[0,:]
-    # print('\n', db.query(q), '\n')
+    X = colnames if type=='categ' else df.iloc[-10:, 0]
+    Y = df.iloc[0,:] if type=='categ' else df.iloc[-10:, 1]
+    
     data = go.Bar(
-        x=colnames,
+        x=X,
         y=Y,
-        name='categ-graph-bar'
+        name='graph-bar'
     )
+
+    ## XAxis layout
+    if type=='time':
+        if subtype=='day': tickformat='%d/%m/%y'
+        elif subtype=='week': tickformat='S%V/%Y'
+        elif subtype=='month': tickformat='%m/%Y'
+    else: tickformat=None
+
     # # Output is the figure with 'data' and 'layout'
     return {
         'data': [data], # data is a list
         'layout': go.Layout( # axis update limits
             title=go.layout.Title(
-                text='Incidentes por categoría',
+                text='Incidentes por %s' % ('categoría' if type=='categ' else 'períodos'),
                 y=1, yref='paper', yanchor='bottom',
                 pad={ 'b':20 },
                 font={ 'size': 20 },
             ),
-            xaxis_title='Tipo de incidente',
+            xaxis_title='Tipo de incidente' if type=='categ' else 'Fecha',
+            xaxis_tickformat=tickformat,
             xaxis_titlefont={ 'size': 16 },
             xaxis_tickfont={ 'size': 13 },
             yaxis_tickfont={ 'size': 13 },
@@ -181,57 +248,36 @@ def graph_categ(option):
 
 
 @app.callback(
-    Output('graph-time', 'figure'),
-    [Input('graph-time-options', 'value')]
+    Output('image-wordcloud', 'src'),
+    [Input('wordcloud-options', 'value')]
+    # Input('graphs-update', 'n_intervals')]
 )
-## Gráfica de INCIDENTES POR PERÍODO DE TIEMPO
-def graph_time(option):
+## Nube de palabras
+def graph_wordcloud(option):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
-    q = '''SELECT DATE_TRUNC('{0}', TWEET_CREATED) AS D, 
-                COUNT(TWEET_CREATED) FROM TWTTWEET 
-                GROUP BY D ORDER BY D; '''.format(option)
+    q = '''SELECT TWEET_TEXT AS TEXT 
+            FROM TWEET
+            WHERE TWEET_CREATED>(
+                SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
+                FROM TWEET
+            ); ''' % (
+                (7 if option=='week' else 1), 
+                'day' if option=='week' else option)
     cursor.execute(q)
     results = cursor.fetchall()
-    colnames = [desc[0] 
-        for desc in cursor.description]
     cursor.close()
     conn.close()
 
-    df = pd.DataFrame(results, columns=colnames)
-    # print('\n', df1, '\n')
-    data = go.Bar(
-        x=df.iloc[:, 0],
-        y=df.iloc[:, 1],
-        name='time-graph-bar',
-    )
-    X = df.iloc[-10:, 0]
-    Y = df.iloc[-10:, 1]
-    ## XAxis layout
-    if option=='day': tickformat='%d/%m/%y'
-    elif option=='week': tickformat='S%V/%Y'
-    elif option=='month': tickformat='%m/%Y'
-    # Output is the figure with 'data' and 'layout'
-    return {
-        'data': [data], # data is a list
-        'layout': go.Layout( # axis update limits
-            title=go.layout.Title(
-                text='Incidentes por períodos',
-                y=1, yref='paper', yanchor='bottom',
-                pad={ 'b':20 },
-                font={ 'size': 20 },
-            ),
-            xaxis_title='Fecha',
-            xaxis_titlefont={ 'size': 16 },
-            xaxis_tickformat=tickformat,
-            xaxis_tickfont={ 'size': 13 },
-            yaxis_tickfont={ 'size': 13 },
-            xaxis=dict(range=[min(X), max(X)]),
-            yaxis=dict(range=[min(Y), max(Y)]),
-            height=300,
-            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10),
-        )}
+    tweets = ' '.join([t[0] for t in results])
+    tweets = ' '.join(re.findall('([A-Z]\S+)', tweets))
+
+    img = BytesIO()
+    wc = WordCloud(background_color='white', 
+        width=350, height=300).generate(tweets)
+    wc.to_image().save(img, format='PNG')
+    return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
 
 
 try:
