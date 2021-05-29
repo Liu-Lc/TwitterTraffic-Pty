@@ -1,0 +1,40 @@
+Accidentes
+
+registr[ao][n]? accidente transito
+report[ao][n]? accidente transito
+accidente transito reportado
+accidente transito registrado
+imagen(es)? accidente transito
+video accidente transito
+accidente transito autopista
+involucrado[s]* accidente transito
+accidente transito via
+accidente transito avenida
+herido[s]?[ a-z]*accidente transito
+lesionado[s]?[ a-z]*accidente transito
+sufrio accidente transito
+
+registr[ao][n]? accidente
+registr[ao] [a-z]* accidente
+report[ao][n]? accidente
+accidente (via|avenida)
+
+^((?!evite).)* accidente
+
+
+Y obstáculo
+trafico[ a-z]*accidente transito
+trafico [ a-z]*accidente transito
+conductores afectados[ a-z]*accidente transito
+accidente transito[ a-z]*trafico afectado
+transito afectado[ a-z]*accidente transito
+conductor[ a-z]*afectad[ a-z]*accidente transito
+
+
+Peligros
+fuerte[s]? lluvia[s]?
+
+
+y obstaculos
+trafico detenido[ a-z]*inundado[s]?
+trafico[ a-z]*inundado[s]?
