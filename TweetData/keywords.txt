@@ -7,19 +7,73 @@ accidente transito registrado
 imagen(es)? accidente transito
 video accidente transito
 accidente transito autopista
-involucrado[s]* accidente transito
+involucrado[s]*[ a-z]*accidente
 accidente transito via
 accidente transito avenida
-herido[s]?[ a-z]*accidente transito
-lesionado[s]?[ a-z]*accidente transito
+herido[s]?[ a-z]*accidente
+lesionado[s]?[ a-z]*accidente
 sufrio accidente transito
 
-registr[ao][n]? accidente
-registr[ao] [a-z]* accidente
-report[ao][n]? accidente
+accidente[ a-z]*vehicul[oa][a-z]*
+vehicul[oa][ a-z]*accidente[a-z]*
+
+registr[ao][n]?[ a-z]*accidente
+report[ao][n]?[ a-z]*accidente
+accidente[ a-z]*registr.*
+accidente[ a-z]*report.*
 accidente (via|avenida)
 
+accidente[ a-z]*involucrado[s]*
+accidente[ a-z]*lesionado[s]*
+accidente[ a-z]*herido[s]*
+
 ^((?!evite).)* accidente
+
+vehicul[oa][ a-z]*colision
+colision[ a-z]*vehicul[oa][a-z]*
+
+registr[ao][n]?[ a-z]*colision[o]?
+report[ao][n]?[ a-z]*colision[o]?
+colision registr.*
+
+lesionado[s]?[ a-z]*colision
+colision[ a-z]*lesionado[s]?
+herido[s]?[ a-z]*colision
+colision[ a-z]*herido[s]?
+involucrado[s]*[ a-z]*colision
+colision[ a-z]*involucrado[s]*
+imagen(es)? colision
+video colision
+sufrio colision
+
+
+accidente[s]?[ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*accidente[s]?
+vehicul[oa][ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*vehicul[oa][a-z]*
+
+report[ao][n]?[ a-z]*cho[cq][a-z]*
+registr[ao][n]?[ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*registr.*
+cho[cq][ a-z]*report.*
+
+lesionado[s]?[ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*lesionado[s]?
+herido[s]?[ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*herido[s]?
+involucrado[s]*[ a-z]*cho[cq][a-z]*
+cho[cq][ a-z]*involucrado[s]*
+
+trafic[ a-z]*cho[cq][a-z]*
+cho[cq]a-z]*trafic[a-z]*
+
+cho[cq][a-z]*
+
+
+
+NO Accidentes
+evit.* accidente
+
 
 
 Y obstáculo
@@ -31,8 +85,12 @@ transito afectado[ a-z]*accidente transito
 conductor[ a-z]*afectad[ a-z]*accidente transito
 
 
+
+
 Peligros
 fuerte[s]? lluvia[s]?
+
+
 
 
 y obstaculos
