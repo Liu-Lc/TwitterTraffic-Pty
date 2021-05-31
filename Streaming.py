@@ -78,21 +78,6 @@ class SListener(StreamListener):
 if __name__=='__main__':
     # Prepare STREAMING
     print('Starting.')
-    # consumer key authentication
-    auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
-    # access key authentication
-    auth.set_access_token(keys.access_token, keys.access_token_secret)
-    # set up API with authentication handler
-    api = API(auth, wait_on_rate_limit=True)
-
-    # instantiate the SListener object
-    listen = SListener(api)
-    # instantiate the stream object
-    stream = Stream(auth, listen)
-
-    # set keywords
-    keywords = ['@traficocpanama,traficocpanama,trafico panama']
-    # keywords = ['accidente'] 
 
     # Update Tweets if the system fails
     # get last date and format it
@@ -106,6 +91,7 @@ if __name__=='__main__':
     # get last week tweets
     print('Updating data.')
     start_time = time.time()
+
     past_tweets = Updater.get_tweets(from_date=last_date)
 
     # get tweets to dataframe
@@ -116,8 +102,8 @@ if __name__=='__main__':
 
     # gets last id
     last_id = db.query('''
-        SELECT max(inc_tweet_id) 
-        FROM INCIDENTS;''')[0][0]
+        SELECT MAX(TWEET_ID) 
+        FROM TWEETS;''')[0][0]
 
     # iterates through updater tweets
     for index, row in data[data.tweetid > last_id].iterrows():
@@ -134,8 +120,26 @@ if __name__=='__main__':
     # closes connection
     db.close_connection()
 
+    end_time = time.time()
+    print('Duration: %f\n' % (end_time-start_time))
+
     # Begin collecting data
     print('Starting stream.')
+    # consumer key authentication
+    auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
+    # access key authentication
+    auth.set_access_token(keys.access_token, keys.access_token_secret)
+    # set up API with authentication handler
+    api = API(auth, wait_on_rate_limit=True)
+
+    # instantiate the SListener object
+    listen = SListener(api)
+    # instantiate the stream object
+    stream = Stream(auth, listen)
+
+    # set keywords
+    keywords = ['@traficocpanama,traficocpanama,trafico panama']
+    # keywords = ['accidente'] 
 
     try: 
         p = Process(target=stream.filter, 
