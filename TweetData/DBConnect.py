@@ -59,17 +59,12 @@ class DB_Connection():
             userid, username, tweetid, text, date, link'''
         self.cursor = self.conn.cursor()
         try:
-            # insert user
-            command = '''INSERT INTO USERS(USER_ID, USER_NAME)
-                        VALUES ('%s', '%s') ON CONFLICT (USER_ID) 
-                        DO NOTHING;''' % (t.userid, t.username)
-            self.cursor.execute(command)
             # insert tweet
-            command = '''INSERT INTO TWEETS(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
-                        TWEET_CREATED, TWEET_LINK)
-                        VALUES (%s, %s, %s, %s, %s)
+            command = '''INSERT INTO TWEETS(TWEET_ID, USER_ID, USER_NAME,
+                        TWEET_TEXT, TWEET_CREATED, TWEET_LINK)
+                        VALUES (%s, %s, %s, %s, %s, %s)
                         ON CONFLICT DO NOTHING;'''
-            self.cursor.execute(command, (t.tweetid, t.userid, \
+            self.cursor.execute(command, (t.tweetid, t.userid, t.username,  \
                 t.text, t.date, t.link))
         except Exception as e: print(e)
         # commit changes and close cursor
@@ -81,11 +76,12 @@ class DB_Connection():
         self.cursor = self.conn.cursor()
         try:
             # insert incident
-            command = '''INSERT INTO TWTINCIDENT(INC_TWEET_ID, INC_PLACE_ID,
-                        ISACCIDENT, ISOBSTACLE, ISDANGER)
-                        VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;'''
-            self.cursor.execute(command, (t.tweetid, t.place, \
-                t.isAccident, t.isObstacle, t.isDanger))
+            command = '''UPDATE TWEETS SET ISINCIDENT=TRUE, 
+                        ISACCIDENT=%s, ISOBSTACLE=%s, ISDANGER=%s
+                        WHERE TWEET_ID=%s;
+                        '''
+            self.cursor.execute(command, (t.isAccident, \
+                                t.isObstacle, t.isDanger, t.tweetid))
         except Exception as e: print(e)
         # commit changes and close cursor
         self.conn.commit()
@@ -108,8 +104,8 @@ class DB_Connection():
     def assign_place(self, id, place, street=None, no=None):
         '''Assigns place with regex strings.'''
         self.cursor = self.conn.cursor()
-        command = '''UPDATE tweets SET place=%d 
-                         WHERE place is null AND text ~* '%s'
+        command = '''UPDATE INCIDENTS SET PLACE=%d 
+                         WHERE PLACE IS NULL AND text ~* '%s'
                          ''' % (id, place)
         if street!='': 
             # print('street: ' + street)
@@ -131,7 +127,7 @@ class DB_Connection():
         results = ''
         self.cursor = self.conn.cursor()
         try:
-            self.cursor.execute('SELECT * FROM twttweet WHERE tweet_id=' + 
+            self.cursor.execute('SELECT * FROM TWEETS WHERE TWEET_ID=' + 
                 str(tweetid) + ';')
             results = self.cursor.fetchall()
             return results
@@ -166,10 +162,7 @@ class DB_Connection():
 
     def query_all(self):
         '''Returns the whole dataset.'''
-        command = '''SELECT T.TWEET_ID, T.TWEET_USER_ID, U.USER_NAME, T.TWEET_TEXT, 
-                    T.TWEET_CREATED, T.TWEET_LINK
-                    FROM TWEETS AS T INNER JOIN USERS AS U
-                    ON T.TWEET_USER_ID=U.USER_ID ORDER BY T.TWEET_CREATED DESC;'''
+        command = '''SELECT * FROM TWEETS;'''
         self.cursor = self.conn.cursor()
         try:
             self.cursor.execute(command)
