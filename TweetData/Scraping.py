@@ -129,7 +129,6 @@ class Scrape():
                             # inserts tweet in database
                             self.db.insert_tweet(tweet)
                             count += 1 # counter for tweets obtained
-                            clear_output(wait=True)
                             clas = Detection.get_classification(tweet.text)
                             if clas['isIncident'] == 1:
                                 i = Tweet.Incident(tweet.tweetid, None,
@@ -138,6 +137,7 @@ class Scrape():
                                                 True if clas['isDanger'] == 1 else False)
                                 self.db.insert_incident(i)
                                 count_i += 1
+                            clear_output(wait=True)
                             nowtime = time()
                             # resume
                             sys.stdout.write('\r' + 'Tweets obtained: ' + str(count) + \
