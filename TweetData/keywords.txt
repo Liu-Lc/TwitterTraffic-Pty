@@ -8,11 +8,11 @@ imagen(es)? accidente transito
 video accidente transito
 accidente transito autopista
 involucrado[s]*[ a-z]*accidente
-accidente transito via
-accidente transito avenida
+accidente[ a-z]*(via|avenida|carretera)
 herido[s]?[ a-z]*accidente
 lesionado[s]?[ a-z]*accidente
 sufrio accidente transito
+sufr[ a-z]*accidente
 
 accidente[ a-z]*vehicul[oa][a-z]*
 vehicul[oa][ a-z]*accidente[a-z]*
@@ -27,14 +27,19 @@ accidente[ a-z]*involucrado[s]*
 accidente[ a-z]*lesionado[s]*
 accidente[ a-z]*herido[s]*
 
+accidente[ a-z]*fatal
+
+
 ^((?!evite).)* accidente
+
 
 vehicul[oa][ a-z]*colision
 colision[ a-z]*vehicul[oa][a-z]*
 
 registr[ao][n]?[ a-z]*colision[o]?
 report[ao][n]?[ a-z]*colision[o]?
-colision registr.*
+colision[ a-z]*registr.*
+colision[ a-z]*report.*
 
 lesionado[s]?[ a-z]*colision
 colision[ a-z]*lesionado[s]?
@@ -46,6 +51,11 @@ imagen(es)? colision
 video colision
 sufrio colision
 
+colision[a-z]* (via|calle|avenida)
+multiple[ a-z]*colision[a-z]*
+colision[ a-z]*multiple
+colision[ a-z]*
+^((?!evit[ea]).)* colision[ a-z]*
 
 accidente[s]?[ a-z]*cho[cq][a-z]*
 cho[cq][ a-z]*accidente[s]?
@@ -70,19 +80,18 @@ cho[cq]a-z]*trafic[a-z]*
 cho[cq][a-z]*
 
 
-
 NO Accidentes
 evit.* accidente
 
 
 
 Y obstáculo
-trafico[ a-z]*accidente transito
-trafico [ a-z]*accidente transito
-conductores afectados[ a-z]*accidente transito
-accidente transito[ a-z]*trafico afectado
-transito afectado[ a-z]*accidente transito
-conductor[ a-z]*afectad[ a-z]*accidente transito
+trafico[ a-z]*accidente
+afectado[ a-z]*accidente
+accidente[ a-z]*trafico
+conductor[ a-z]*afectad[ a-z]*accidente
+
+trafico[ a-z]*colision[a-z]*
 
 
 
