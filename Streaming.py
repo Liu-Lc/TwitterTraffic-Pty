@@ -105,6 +105,7 @@ if __name__=='__main__':
 
     # get last week tweets
     print('Updating data.')
+    start_time = time.time()
     past_tweets = Updater.get_tweets(from_date=last_date)
 
     # get tweets to dataframe
@@ -116,7 +117,7 @@ if __name__=='__main__':
     # gets last id
     last_id = db.query('''
         SELECT max(inc_tweet_id) 
-        FROM public.twtincident;''')[0][0]
+        FROM INCIDENTS;''')[0][0]
 
     # iterates through updater tweets
     for index, row in data[data.tweetid > last_id].iterrows():

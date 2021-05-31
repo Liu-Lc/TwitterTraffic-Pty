@@ -17,10 +17,10 @@ class DB_Connection():
     def create_tables(self):
         '''Creates table with tweet structure. '''
         commands = (# Table User
-                    '''CREATE TABLE IF NOT EXISTS TwtUser(USER_ID TEXT PRIMARY KEY,
+                    '''CREATE TABLE IF NOT EXISTS USERS(USER_ID TEXT PRIMARY KEY,
                                         USER_NAME TEXT);''',
                     # Table Tweet
-                    '''CREATE TABLE IF NOT EXISTS TwtTweet(TWEET_ID BIGINT PRIMARY KEY,
+                    '''CREATE TABLE IF NOT EXISTS TWEETS(TWEET_ID BIGINT PRIMARY KEY,
                                                 TWEET_USER_ID TEXT, TWEET_TEXT TEXT,
                                                 TWEET_CREATED TIMESTAMP WITH TIME ZONE,
                                                 TWEET_LINK TEXT,
@@ -29,7 +29,7 @@ class DB_Connection():
                                                 CONSTRAINT FK_USER FOREIGN KEY(TWEET_USER_ID)
                                                  REFERENCES TwtUser(USER_ID));''',
                     # Table Incident
-                    '''CREATE TABLE IF NOT EXISTS TwtIncident(INC_TWEET_ID BIGINT PRIMARY KEY,
+                    '''CREATE TABLE IF NOT EXISTS INCIDENTS(INC_TWEET_ID BIGINT PRIMARY KEY,
                                                             INC_PLACE_ID BIGINT,
                                                             ISINCIDENT BOOLEAN,
                                                             ISACCIDENT BOOLEAN,
@@ -40,7 +40,7 @@ class DB_Connection():
                                                             CONSTRAINT FK_PLACE_ID FOREIGN KEY(INC_PLACE_ID)
                                                                 REFERENCES Place(PLACE_ID));''',
                     # Table Place
-                    '''CREATE TABLE IF NOT EXISTS Place(PLACE_ID BIGINT PRIMARY KEY,
+                    '''CREATE TABLE IF NOT EXISTS PLACE(PLACE_ID BIGINT PRIMARY KEY,
                                                         PLACE_NAME TEXT,
                                                         PLACE_LAT FLOAT,
                                                         PLACE_LONG FLOAT);''')
@@ -60,12 +60,12 @@ class DB_Connection():
         self.cursor = self.conn.cursor()
         try:
             # insert user
-            command = '''INSERT INTO TWTUSER(USER_ID, USER_NAME)
+            command = '''INSERT INTO USERS(USER_ID, USER_NAME)
                         VALUES ('%s', '%s') ON CONFLICT (USER_ID) 
                         DO NOTHING;''' % (t.userid, t.username)
             self.cursor.execute(command)
             # insert tweet
-            command = '''INSERT INTO TWTTWEET(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
+            command = '''INSERT INTO TWEETS(TWEET_ID, TWEET_USER_ID, TWEET_TEXT,
                         TWEET_CREATED, TWEET_LINK)
                         VALUES (%s, %s, %s, %s, %s)
                         ON CONFLICT DO NOTHING;'''
@@ -141,9 +141,9 @@ class DB_Connection():
     def query_date(self, last=True):
         '''Gets first or last date obtained.'''
         q = ''
-        if last: q = '''SELECT TWEET_CREATED FROM TWTTWEET ORDER BY TWEET_CREATED
+        if last: q = '''SELECT TWEET_CREATED FROM TWEETS ORDER BY TWEET_CREATED
                     DESC LIMIT 1;'''
-        else: q = '''SELECT TWEET_CREATED FROM TWTTWEET ORDER BY TWEET_CREATED
+        else: q = '''SELECT TWEET_CREATED FROM TWEETS ORDER BY TWEET_CREATED
                     ASC LIMIT 1;'''
         self.cursor = self.conn.cursor()
         try:
@@ -168,7 +168,7 @@ class DB_Connection():
         '''Returns the whole dataset.'''
         command = '''SELECT T.TWEET_ID, T.TWEET_USER_ID, U.USER_NAME, T.TWEET_TEXT, 
                     T.TWEET_CREATED, T.TWEET_LINK
-                    FROM TWTTWEET AS T INNER JOIN TWTUSER AS U
+                    FROM TWEETS AS T INNER JOIN USERS AS U
                     ON T.TWEET_USER_ID=U.USER_ID ORDER BY T.TWEET_CREATED DESC;'''
         self.cursor = self.conn.cursor()
         try:
