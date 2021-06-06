@@ -123,7 +123,7 @@ def update_tweets(interval, children):
     cursor = conn.cursor()
     q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
-            FROM TWEET WHERE ISINCIDENT=TRUE
+            FROM TWEETS WHERE ISINCIDENT=TRUE
             ORDER BY TWEET_ID DESC LIMIT 10; '''
     cursor.execute(q)
     results = cursor.fetchall()
@@ -200,15 +200,15 @@ def graph_type(type, subtype):
             COUNT(CASE WHEN ISACCIDENT THEN 1 END) AS accidentes,
             COUNT(CASE WHEN ISOBSTACLE THEN 1 END) AS obstáculos,
             COUNT(CASE WHEN ISDANGER THEN 1 END) AS peligros
-        FROM TWEET WHERE TWEET_CREATED>(
+        FROM TWEETS WHERE TWEET_CREATED>(
             SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
-            FROM TWEET
+            FROM TWEETS
         ); ''' % (
             (7 if subtype=='week' else 1), 
             'day' if subtype=='week' else subtype)
     elif type=='time':
         q = '''SELECT DATE_TRUNC('%s', TWEET_CREATED) AS D, 
-                    COUNT(TWEET_CREATED) FROM TWEET 
+                    COUNT(TWEET_CREATED) FROM TWEETS 
                     GROUP BY D ORDER BY D; ''' % (subtype)
     cursor.execute(q)
     results = cursor.fetchall()
@@ -265,10 +265,10 @@ def graph_wordcloud(option):
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_TEXT AS TEXT 
-            FROM TWEET
+            FROM TWEETS
             WHERE TWEET_CREATED>(
                 SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
-                FROM TWEET
+                FROM TWEETS
             ); ''' % (
                 (7 if option=='week' else 1), 
                 'day' if option=='week' else option)
