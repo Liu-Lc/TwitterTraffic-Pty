@@ -27,8 +27,9 @@ def preprocess(tweet):
     # remove multiple spaces
     tweet = re.sub("\s+", " ", tweet)
     tweet = re.sub('^\s+', '', tweet)
-    # lower characters
-    tweet = tweet.lower()
+    # lower first character
+    try: tweet = tweet[0].lower() + tweet[1:]
+    except: pass
     # remove stop words
     tweet = ' '.join([word for word in tweet.split(' ') 
                 if not word.lower() in stop_words])
