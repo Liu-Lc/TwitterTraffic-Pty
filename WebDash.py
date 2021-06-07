@@ -11,6 +11,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
+import geopandas as gpd
 import plotly.colors as pcol
 import plotly.express as px
 import plotly.graph_objects as go
@@ -285,6 +286,54 @@ def graph_wordcloud(option):
     wc.to_image().save(img, format='PNG')
     return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
     
+
+@app.callback(
+    Output('map', 'figure'),
+    # [Input('get-tweets-interval', 'n_intervals'),
+    [Input('button', 'n_clicks')]
+)
+## Map
+def update_map(interval):
+    conn = ps.connect(
+        database='traffictwt', user='postgres', password=keys.db_pass)
+    q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
+        FROM TWEETS_PLACES AS TP
+        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID '''
+    # GeoDataframe
+    tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='road_geom')
+    conn.close()
+    ## Generate figure
+    fig = go.Figure(
+        go.Scattermapbox(
+            lat=tweets_geo['road_geom'].y, lon=tweets_geo['road_geom'].x,
+            marker=go.scattermapbox.Marker(
+                size=10,
+                color='red',
+                opacity=0.7
+            ),
+            text=tweets_geo['tweet_text'],
+            hoverinfo=['text']
+        )
+    )
+    fig.update_geos(
+        resolution=110,
+    )
+    fig.update_layout(
+        margin={"r":0,"t":50,"l":0,"b":0},
+        mapbox_style="open-street-map", mapbox_zoom=11,
+        mapbox_center={'lat':8.99, 'lon':-79.5359},
+        title=go.layout.Title(
+            text='Mapa de incidentes',
+            y=1, yref='paper', yanchor='bottom',
+            pad={ 'b':20 },
+            font={ 'size': 20 },
+        ),
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+        )
+    )
+    return fig
 
 try:
     app.run_server()
