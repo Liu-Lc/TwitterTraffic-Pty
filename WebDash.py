@@ -61,7 +61,11 @@ app.layout = html.Div(id='mainContainer', children=[
 
         # sección de la derecha
         html.Div(className='eight columns', children=[
-            # sección de arriba con dos gráficas
+            # sección con el mapa
+            html.Div(className='pretty_container', children=[
+                dcc.Graph(id='map', className='map')
+            ]),
+            # sección de abajo con dos gráficas
             html.Div(className='row', children=[
                 # gráfica izquierda
                 html.Div(className='pretty_container six columns', children=[
@@ -94,10 +98,6 @@ app.layout = html.Div(id='mainContainer', children=[
                 ]),
                 ## These intervals just put one?
                 dcc.Interval(id='graphs-update', interval=5000)
-            ]),
-            # sección de abajo con el mapa
-            html.Div(className='pretty_container', children=[
-                dcc.Graph(id='map')
             ]),
             # sección bajo el mapa
             # html.Div(className='pretty_container', children=[
@@ -164,6 +164,52 @@ def update_tweets(interval, children):
 
 
 @app.callback(
+    Output('map', 'figure'),
+    # [Input('get-tweets-interval', 'n_intervals'),
+    [Input('button', 'n_clicks')]
+)
+## Map
+def update_map(interval):
+    conn = ps.connect(
+        database='traffictwt', user='postgres', password=keys.db_pass)
+    q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
+        FROM TWEETS_PLACES AS TP
+        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID '''
+    # GeoDataframe
+    tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='road_geom')
+    conn.close()
+    ## Generate figure
+    fig = go.Figure(
+        go.Scattermapbox(
+            lat=tweets_geo['road_geom'].y, lon=tweets_geo['road_geom'].x,
+            marker=go.scattermapbox.Marker(
+                size=10,
+                color='red',
+                opacity=0.7
+            ),
+            text=tweets_geo['tweet_text'].str.wrap(50).apply(lambda x: 
+                x.replace('\n', '<br>')),
+            hoverinfo=['text'],
+            hovertemplate='%{text}<extra></extra>'
+        )
+    )
+    fig.update_geos(
+        resolution=110,
+    )
+    fig.update_layout(
+        margin={"r":0,"t":0,"l":0,"b":0},
+        mapbox_style="open-street-map", mapbox_zoom=11,
+        mapbox_center={'lat':8.98, 'lon':-79.5359},
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=12,
+        ),
+        height=300,
+    )
+    return fig
+
+
+@app.callback(
     [Output('subtype-options', 'options'),
     Output('subtype-options', 'value')],
     [Input('type-options', 'value')] 
@@ -198,12 +244,12 @@ def graph_type(type, subtype):
     cursor = conn.cursor()
     if type=='categ':
         q = '''SELECT
-            COUNT(CASE WHEN ISACCIDENT THEN 1 END) AS accidentes,
-            COUNT(CASE WHEN ISOBSTACLE THEN 1 END) AS obstáculos,
-            COUNT(CASE WHEN ISDANGER THEN 1 END) AS peligros
-        FROM TWEETS WHERE TWEET_CREATED>(
-            SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
-            FROM TWEETS
+                COUNT(CASE WHEN ISACCIDENT THEN 1 END) AS accidentes,
+                COUNT(CASE WHEN ISOBSTACLE THEN 1 END) AS obstáculos,
+                COUNT(CASE WHEN ISDANGER THEN 1 END) AS peligros
+            FROM TWEETS WHERE TWEET_CREATED>(
+                SELECT DATE_TRUNC('DAY', MAX(TWEET_CREATED) - INTERVAL '%i %s') 
+                FROM TWEETS
         ); ''' % (
             (7 if subtype=='week' else 1), 
             'day' if subtype=='week' else subtype)
@@ -251,7 +297,7 @@ def graph_type(type, subtype):
             xaxis_tickfont={ 'size': 13 },
             yaxis_tickfont={ 'size': 13 },
             height=300,
-            margin=go.layout.Margin(l=40, r=40, b=70, t=75, pad=10),
+            margin=go.layout.Margin(l=40, r=40, b=70, t=60, pad=5),
         )}
 
 
@@ -282,58 +328,10 @@ def graph_wordcloud(option):
 
     img = BytesIO()
     wc = WordCloud(background_color='white', 
-        width=350, height=250).generate(tweets)
+        width=350, height=200).generate(tweets)
     wc.to_image().save(img, format='PNG')
     return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
     
-
-@app.callback(
-    Output('map', 'figure'),
-    # [Input('get-tweets-interval', 'n_intervals'),
-    [Input('button', 'n_clicks')]
-)
-## Map
-def update_map(interval):
-    conn = ps.connect(
-        database='traffictwt', user='postgres', password=keys.db_pass)
-    q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
-        FROM TWEETS_PLACES AS TP
-        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID '''
-    # GeoDataframe
-    tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='road_geom')
-    conn.close()
-    ## Generate figure
-    fig = go.Figure(
-        go.Scattermapbox(
-            lat=tweets_geo['road_geom'].y, lon=tweets_geo['road_geom'].x,
-            marker=go.scattermapbox.Marker(
-                size=10,
-                color='red',
-                opacity=0.7
-            ),
-            text=tweets_geo['tweet_text'],
-            hoverinfo=['text']
-        )
-    )
-    fig.update_geos(
-        resolution=110,
-    )
-    fig.update_layout(
-        margin={"r":0,"t":50,"l":0,"b":0},
-        mapbox_style="open-street-map", mapbox_zoom=11,
-        mapbox_center={'lat':8.99, 'lon':-79.5359},
-        title=go.layout.Title(
-            text='Mapa de incidentes',
-            y=1, yref='paper', yanchor='bottom',
-            pad={ 'b':20 },
-            font={ 'size': 20 },
-        ),
-        hoverlabel=dict(
-            bgcolor="white",
-            font_size=12,
-        )
-    )
-    return fig
 
 try:
     app.run_server()
