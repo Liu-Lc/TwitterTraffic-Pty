@@ -19,13 +19,13 @@ def preprocess(tweet):
     # remove between parentesis
     tweet = re.sub('\[.*\]','', tweet)
     # remove mentions
-    tweet = re.sub("@\w+", "", tweet)
+    tweet = re.sub('@\w+', '', tweet)
     # remove hashtags
-    tweet = re.sub("#\w+", "", tweet)
+    tweet = re.sub('#\w+', '', tweet)
     # alphanumeric and hashtags
-    tweet = re.sub("[^a-zA-Z0-9ñáéíóúÁÉÍÓÚüÜ]", " ", tweet)
+    tweet = re.sub('[^a-zA-Z0-9ñáéíóúÁÉÍÓÚüÜ]', ' ', tweet)
     # remove multiple spaces
-    tweet = re.sub("\s+", " ", tweet)
+    tweet = re.sub('\s+', ' ', tweet)
     tweet = re.sub('^\s+', '', tweet)
     # lower first character
     try: tweet = tweet[0].lower() + tweet[1:]
@@ -33,6 +33,8 @@ def preprocess(tweet):
     # remove stop words
     tweet = ' '.join([word for word in tweet.split(' ') 
                 if not word.lower() in stop_words])
+    # union km h
+    tweet = re.sub('km h', 'kmh', tweet)
     #replace tildes
     tweet = re.sub('á', 'a', tweet)
     tweet = re.sub('é', 'e', tweet)
