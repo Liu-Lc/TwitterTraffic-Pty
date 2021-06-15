@@ -2,6 +2,7 @@
 others
 extra
 all_files/keys.py
+historical-data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
