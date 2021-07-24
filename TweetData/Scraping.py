@@ -62,7 +62,7 @@ class Scrape():
         ## RETURN TWEET INFO
         return t
 
-    def start_scrape(self, date_from=None, date_until=None):
+    def start_scrape(self, date_from=None, date_until=''):
         """Method that starts the scraping process and inserts the data
         into the database.
 
@@ -96,7 +96,7 @@ class Scrape():
             if date_from=='' or date_from==None:
                 date_from = self.db.query_date(last=True)
             # formats date for search and minus a day
-            date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
+            # date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
             print('From date: ' + date_from)
             query_text += 'since:' + date_from
             # checks if a limit date was given
@@ -104,10 +104,15 @@ class Scrape():
                 query_text += ' until:' + date_until
             query_text += ' -filter:replies -filter:retweets'
             # gets search box element
+            driver.find_element_by_xpath('//label[@data-testid="SearchBox_Search_Input_label"]').click()
+            try:
+                driver.find_element_by_xpath('//label[@data-testid="SearchBox_Search_Input_label"]//div[@role="button"]').click()
+            except: pass
+            driver.find_element_by_xpath('//label[@data-testid="SearchBox_Search_Input_label"]').click()
             search = driver.find_element_by_xpath('//input[@aria-label="Search query"]')
-            search.clear()
             ## sends query text
             search.send_keys(query_text + Keys.RETURN)
+            driver.refresh()
             sleep(2)
             # order by latest dates
             driver.find_element_by_link_text('Latest').click()
@@ -125,7 +130,7 @@ class Scrape():
                         # gets the tweet info from a card
                         tweet = self.get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
                         # checks if the tweet is valid
-                        if len(self.db.query_id(tweet.tweetid))!=0 or tweet!=None:
+                        if tweet!=None: # len(self.db.query_id(tweet.tweetid))!=0 or 
                             # inserts tweet in database
                             self.db.insert_tweet(tweet)
                             count += 1 # counter for tweets obtained
