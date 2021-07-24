@@ -10,6 +10,33 @@
 .tweet-link {
   text-decoration: none;
 }
+.tweet-header {
+  display: flex;
+  justify-content: space-between;
+}
+.date-text {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+.date-text .date-tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+.date-text:hover .date-tooltip {
+  visibility: visible;
+}
 .tweet-card {
   border-radius: 10px;
   border: 1px solid #e6ecf0;
@@ -37,7 +64,7 @@
 }
 
 .background-rectangle {
-  height: calc(100% - 36px);
+  height: calc(100% - 72px);
   width: 100%;
   background-color: white;
   display: flex;
@@ -65,7 +92,7 @@
   font: Roboto;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5 {
   margin-top: 0;
   margin-bottom: 0;
   font-weight: 300;
@@ -81,8 +108,15 @@ h4 { font-size: 1.6rem; line-height: 1.35; letter-spacing: -.08rem;
   margin-bottom: 1rem; margin-top: 1rem;}
 h5 { font-size: 1.4rem; line-height: 1.5;  letter-spacing: -.05rem;
   margin-bottom: 0.75rem; margin-top: 0.75rem;}
-h6 { font-size: 1.4rem; line-height: 1.6;  letter-spacing: 0;
-  margin-bottom: 0.75rem; margin-top: 0.75rem;}
+h6 { 
+  font-size: 15px;
+  text-align: center;
+  font-weight: 300;
+  letter-spacing: 0;
+  margin: 0;
+  height: 20px;
+  padding: 8px 0px;
+}
 p { font-size: 1.36rem; }
 
 #mainContainer {

@@ -22,6 +22,7 @@ from wordcloud import WordCloud
 from io import BytesIO
 import base64
 import re, random, sys
+import datetime
 
 sys.path.append('./TweetData')
 from TweetData import keys, Preprocessing
@@ -82,6 +83,7 @@ app.layout = html.Div(id='mainContainer', children=[
                 ]),
                 # gráfica derecha
                 html.Div(className='pretty_container six columns', children=[
+                        html.H6('Palabras más frecuentes'),
                         dcc.Dropdown(id='wordcloud-options', className='dropdown', 
                             options=[
                                 {'label': 'Diario', 'value': 'day'},
@@ -122,7 +124,7 @@ def update_tweets(interval, children):
     conn = ps.connect(
         database='traffictwt', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
-    q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME,
+    q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, TWEET_CREATED,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
             FROM TWEETS WHERE ISINCIDENT=TRUE
             ORDER BY TWEET_ID DESC LIMIT 10; '''
@@ -150,10 +152,21 @@ def update_tweets(interval, children):
         block += [html.Li(className='tweet-card', children=[
                 html.A(className='tweet-link', href=tweet.link, children=[
                     html.Div(className='tweet-content', children=[
-                        html.Span(
-                            html.Strong(tweet.username),
-                        ),
-                        html.Span(' @' + tweet.userid),
+                        html.Div(className='tweet-header', children=[
+                            html.Span(children=[
+                                html.Strong(tweet.username),
+                                html.Span(' @' + tweet.userid),
+                            ]),
+                            html.Span(className='date-text', children=[
+                                tweet.tweet_created.strftime('%b-%d' if 
+                                    tweet.tweet_created.date() < datetime.datetime.today().date()
+                                    else '%H:%M'
+                                ),
+                                html.Span(className='date-tooltip', children=[
+                                    tweet.tweet_created.strftime('%y-%m-%d %H:%M:%S')
+                                ])
+                            ]),
+                        ]),
                         html.P(className='tweet-text', children=[tweet.text])
                     ]),
                 ]),
@@ -204,7 +217,7 @@ def update_map(interval):
             bgcolor="white",
             font_size=12,
         ),
-        height=300,
+        height=400,
     )
     return fig
 
