@@ -93,10 +93,10 @@ class Scrape():
             ## query text
             query_text = '(from:traficocpanama) OR (@traficocpanama) '
             ## get last date in database
-            if date_from=='' or date_from==None:
+            if date_from==None:
                 date_from = self.db.query_date(last=True)
             # formats date for search and minus a day
-            # date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
+            date_from = (date_from - timedelta(days=1)).strftime('%Y-%m-%d')
             print('From date: ' + date_from)
             query_text += 'since:' + date_from
             # checks if a limit date was given
