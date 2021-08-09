@@ -1,4 +1,4 @@
-Accidentes
+                        Accidentes
 
 registr[ao][n]? accidente transito
 report[ao][n]? accidente transito
@@ -28,10 +28,6 @@ accidente[ a-z]*lesionado[s]*
 accidente[ a-z]*herido[s]*
 
 accidente[ a-z]*fatal
-
-
-^((?!evite).)* accidente
-
 
 vehicul[oa][ a-z]*colision
 colision[ a-z]*vehicul[oa][a-z]*
@@ -80,8 +76,60 @@ cho[cq]a-z]*trafic[a-z]*
 cho[cq][a-z]*
 
 
-NO Accidentes
+registr[ao][n]?[ a-z]*atropell[ a-z]*
+report[ao][n]?[ a-z]*atropell[ a-z]*
+atropell[ a-z]*registr.*
+atropell[ a-z]*report.*
+
+victima.*atropell[ a-z]*
+trafic[ a-z]*atropell[ a-z]*
+atropell.*trafi.*
+atropell[ a-z]*transito
+transito.*atropell[ a-z]*
+
+muer.*atropell[ a-z]*
+atropell[ a-z]*muer.*
+fallec.*atropell[ a-z]*
+atropell[ a-z]*fallec.*
+muri.*atropell.*
+
+atropell.*vehicul.*
+vehicul.*atropell.*
+
+atropell.*(avenida|calle|carretera)
+atropell.*via[ a-z]+
+atropell.*frente
+atropell.*altura
+altura.*atropell.*
+persona.*atropell.*
+atropell.*persona.*
+(hombre|mujer|joven|menor).*atropell.*
+atropell.*(hombre|mujer|joven|menor)
+
+atropell.*fuga
+fuga.*atropell.*
+atropell.*accident.*
+accident.*atropell.*
+atropell.*(fatal|mortal)
+tranque.*atropell.*
+sujeto.*atropell.*
+
+capt.*atropell.*
+atropell.*capt.*
+
+vuelc.*
+(mula|camion|auto|carro|bus|vehiculo|sedan|articulado).*volc.*
+volc.*(mula|camion|auto|carro|bus|vehiculo|sedan|articulado)
+
+
+
+
+
+^((?!evite).)* accidente
+
+                    NO Accidentes
 evit.* accidente
+
 
 
 
@@ -96,6 +144,7 @@ trafico[ a-z]*colision[a-z]*
 
 
 
+
 Peligros
 fuerte[s]? lluvia[s]?
 
@@ -105,3 +154,22 @@ fuerte[s]? lluvia[s]?
 y obstaculos
 trafico detenido[ a-z]*inundado[s]?
 trafico[ a-z]*inundado[s]?
+
+
+
+
+                OBSTÁCULOS
+
+(afectado|lento|detenido|pesado|paralizado|denso).*trafico.*
+trafico.*(afectado|lento|detenido|pesado|paralizado|denso)
+(afectado|lento|detenido|pesado|paralizado|denso).*transit.*
+transit.*(afectado|lento|detenido|pesado|paralizado|denso)
+trafic.*afect.*
+
+
+trancado
+
+protesta.*
+huelga.*
+
+
