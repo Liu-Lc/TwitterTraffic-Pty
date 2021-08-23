@@ -121,6 +121,8 @@ vuelc.*
 (mula|camion|auto|carro|bus|vehiculo|sedan|articulado).*volc.*
 volc.*(mula|camion|auto|carro|bus|vehiculo|sedan|articulado)
 
+ incidente 
+
 
 
 
@@ -140,14 +142,6 @@ accidente[ a-z]*trafico
 conductor[ a-z]*afectad[ a-z]*accidente
 
 trafico[ a-z]*colision[a-z]*
-
-
-
-
-
-Peligros
-fuerte[s]? lluvia[s]?
-
 
 
 
@@ -172,4 +166,48 @@ trancado
 protesta.*
 huelga.*
 
+mantiene.*trafico.*
+vista.*trafico.*
+
+trafico.*mantiene.*
+
+afect.*trafico.*
+
+trafico.*(via|ciudad|avenida|calle)
+(via|ciudad|avenida|calle).*trafico.*
+
+marcha.*
+
+detenid.*(altura|via|direccion)
+
+(mula|bus|vehiculo|auto).*detenid.*
+
+desvi[ao].*(avenida|cinta|calle|paño)
+
+ cierre.*
+
+[0-9]+km h desplaza.* auto.*
+
+paño.*cerrado.*
+
+^cierr.*
+ cierr.*
+
+
+
+
+                Peligros
+
+fuerte[s]? lluvia[s]?
+(fuerte|intensa) (lluvia|llueve|aguacero).*
+^lluvia.*
+
+ inund.*
+^inund.*
+
+ (lluvia|llueve).*(via|ruta|calle|avenida)
+(via|ruta|calle|avenida).* (lluvia|llueve).*
+
+ incendi.*
+^incendi.*
 
