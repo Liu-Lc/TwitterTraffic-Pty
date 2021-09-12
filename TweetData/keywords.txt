@@ -13,6 +13,8 @@ herido[s]?[ a-z]*accidente
 lesionado[s]?[ a-z]*accidente
 sufrio accidente transito
 sufr[ a-z]*accidente
+(registr|report).*accident.*
+
 
 accidente[ a-z]*vehicul[oa][a-z]*
 vehicul[oa][ a-z]*accidente[a-z]*
@@ -21,11 +23,11 @@ registr[ao][n]?[ a-z]*accidente
 report[ao][n]?[ a-z]*accidente
 accidente[ a-z]*registr.*
 accidente[ a-z]*report.*
-accidente (via|avenida)
 
 accidente[ a-z]*involucrado[s]*
 accidente[ a-z]*lesionado[s]*
 accidente[ a-z]*herido[s]*
+accidente.*(involucrado|lesionad|herid|fatal).*
 
 accidente[ a-z]*fatal
 
@@ -41,6 +43,8 @@ lesionado[s]?[ a-z]*colision
 colision[ a-z]*lesionado[s]?
 herido[s]?[ a-z]*colision
 colision[ a-z]*herido[s]?
+(lesionad|herid|multiple).*colision
+
 involucrado[s]*[ a-z]*colision
 colision[ a-z]*involucrado[s]*
 imagen(es)? colision
@@ -93,6 +97,8 @@ fallec.*atropell[ a-z]*
 atropell[ a-z]*fallec.*
 muri.*atropell.*
 
+(registr|report|victima|muer|fallec|muri).*atropell[ a-z]*
+
 atropell.*vehicul.*
 vehicul.*atropell.*
 
@@ -130,6 +136,11 @@ volc.*(mula|camion|auto|carro|bus|vehiculo|sedan|articulado)
 (tendido|derramo).*(auto|conductor|vehiculo|mula|taxi|carro|camion|articulado|sedan).*
 
 
+reportaron personas heridas
+victimas fatales transito
+cae.*hueco
+
+
 
 
 
@@ -154,6 +165,7 @@ trafico[ a-z]*colision[a-z]*
 y obstaculos
 trafico detenido[ a-z]*inundado[s]?
 trafico[ a-z]*inundado[s]?
+
 
 
 
@@ -201,9 +213,7 @@ paño.*cerrado.*
 
 
 carril.*cerrad
-inversion.*carril
-cerrad.*carril
-cierre.*carril
+(cerrad|cierr|inversion).*carril.*
 
 
 vehicul[ao].*afecta
@@ -230,7 +240,8 @@ cerrad.*(via|puente|ave|corredor|calle)
 
 grupo personas.*
 
-
+interamericana altura
+intolerancia calles
 
 
 
@@ -279,6 +290,8 @@ unidad.*policia
 
 policia.*
 
+conductores precaucion
+larga.*fila
 
 
 
@@ -304,3 +317,46 @@ redes sociales
 papa francisco
 
 camara.*capt[ao].*
+
+6678 4951 6983
+
+^((?!viajando|evitar).)*carnaval
+pasarse semaforo
+te taxi
+rastro alessandria
+
+
+señaliza tus maniobras
+precio caja
+china
+whatsapp 
+
+compartir forma
+
+pierdas segmento
+entrega bonos
+ng be bugle
+
+(despejad|fluid| habilitad).*
+
+
+
+
+
+
+
+
+
+panama oeste
+san miguelito
+cinta costera
+puente americas	
+via españa
+via centenario
+corredor sur
+corredor norte
+domingo diaz
+san francisco
+autopista arraijan	
+arraijan
+chorrera
