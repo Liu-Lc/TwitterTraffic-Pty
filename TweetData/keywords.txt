@@ -124,6 +124,12 @@ volc.*(mula|camion|auto|carro|bus|vehiculo|sedan|articulado)
  incidente 
 
 
+(auto|conductor|vehiculo|mula|taxi|carro|camion|articulado|sedan).* estrell[oa] .* 
+
+
+(tendido|derramo).*(auto|conductor|vehiculo|mula|taxi|carro|camion|articulado|sedan).*
+
+
 
 
 
@@ -194,6 +200,39 @@ paño.*cerrado.*
  cierr.*
 
 
+carril.*cerrad
+inversion.*carril
+cerrad.*carril
+cierre.*carril
+
+
+vehicul[ao].*afecta
+
+acordonad.*
+
+(bus|mula|auto|vehiculo|taxi).*desprende.*
+desprende.*(bus|mula|auto|vehiculo|taxi|camion).*
+
+
+ desperfecto.*
+
+varad[oa].*altura
+
+(auto|conductor|vehiculo|mula|taxi|carro|camion|articulado|sedan).*(tuberia|tendido|derramo).*
+
+tuberia 
+
+reporta.*altura
+
+cerrad.*(via|puente|ave|corredor|calle)
+
+(via|puente|ave|corredor|calle).*cerrad.*
+
+grupo personas.*
+
+
+
+
 
 
                 Peligros
@@ -211,3 +250,57 @@ fuerte[s]? lluvia[s]?
  incendi.*
 ^incendi.*
 
+arbol.*desprende.*
+desprende.*arbol.*
+
+arbol.*(cayo|cae|caid|cayera).*
+
+balacera 
+
+
+accion policial 
+
+tuberia 
+
+reporta.*altura
+
+metro 
+
+(homicidio|asesina|bombero|robo|bala).*conductor.* evitar
+(explota|persecucion|emergencia).*
+(explos|tiro).*conductor.* evitar.*(derram)*
+
+(fuerte|persecu[cs]ion).*policia
+(sujeto|robo|tiro|bala).*policia
+
+operativo.*policia
+
+unidad.*policia
+
+policia.*
+
+
+
+
+
+            NO APLICAN
+
+
+feliz
+ dia
+
+salud
+
+telegram
+
+cifras jugaron 
+sorteo
+
+tu auto
+
+toque queda
+
+redes sociales
+papa francisco
+
+camara.*capt[ao].*
