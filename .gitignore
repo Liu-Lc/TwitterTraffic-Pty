@@ -3,6 +3,7 @@ others
 extra
 all_files/keys.py
 historical-data
+TweetData/models
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
