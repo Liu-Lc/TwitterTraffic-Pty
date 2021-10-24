@@ -122,6 +122,22 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
+    def assign_classification(self, id, isincident, isaccident, isobstacle, isdanger):
+        '''Inserts incident data into the Incidents table.'''
+        self.cursor = self.conn.cursor()
+        try:
+            # insert incident
+            command = '''UPDATE TWEETS SET ISINCIDENT=%s, 
+                        ISACCIDENT=%s, ISOBSTACLE=%s, ISDANGER=%s
+                        WHERE TWEET_ID=%s;
+                        '''
+            self.cursor.execute(command, (isincident, isaccident, \
+                                isobstacle, isdanger, id))
+        except Exception as e: print(e)
+        # commit changes and close cursor
+        self.conn.commit()
+        self.cursor.close()
+
     def query_id(self, tweetid):
         '''Returns id from query.'''
         results = ''
