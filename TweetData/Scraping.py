@@ -13,6 +13,7 @@ from time import sleep, time
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 from getpass import getpass
 from IPython.display import clear_output
 from datetime import timedelta
@@ -45,7 +46,7 @@ class Scrape():
         place = coords = '' # empty place and coords
         userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
         username = card.find_element_by_xpath('.//span').text
-        text = card.find_element_by_xpath('.//div[2]/div[2]/div[1]').text
+        text = card.find_element_by_xpath('.//div[2]/div[2]/div[2]/div[1]').text
         ## GET TIME DATA
         try:
             date = card.find_element_by_xpath('.//time').get_attribute('datetime')
@@ -74,16 +75,19 @@ class Scrape():
             None.
         """
         ## start driver and go to twitter
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-extensions")
         driver = Chrome('C:\\Users\\lucia\\chromedriver.exe')
         driver.get('https://www.twitter.com\login')
-        sleep(2) # time to load
+        sleep(5) # time to load
         ## user and pass
-        username = driver.find_element_by_xpath('//input[@name="session[username_or_email]"]')
-        username.send_keys('Lc_L23')
-        password = driver.find_element_by_xpath('//input[@name="session[password]"]')
-        password.send_keys(getpass() + Keys.RETURN)
-        print('Logging in.')
+        username = driver.find_element_by_xpath('//input[@name="username"]')
+        username.send_keys('Lc_L23' + Keys.RETURN)
         sleep(2)
+        password = driver.find_element_by_xpath('//input[@name="password"]')
+        password.send_keys(getpass('Twt pass: ') + Keys.RETURN)
+        print('Logging in.')
+        sleep(5)
         # temp variables
         count = 0; count_i = 0; starttime = time()
         exit_var = False
@@ -103,6 +107,7 @@ class Scrape():
             if date_until!='':
                 query_text += ' until:' + date_until
             query_text += ' -filter:replies -filter:retweets'
+            print(query_text)
             # gets search box element
             driver.find_element_by_xpath('//label[@data-testid="SearchBox_Search_Input_label"]').click()
             try:
@@ -118,6 +123,21 @@ class Scrape():
             driver.find_element_by_link_text('Latest').click()
             # sets position variable
             last_pos = driver.execute_script('return window.pageYOffset;')
+            sleep(2)
+            # order by latest dates
+            try:
+                driver.find_element_by_link_text('Latest').click()
+                driver.execute_script('window.scrollTo(0, 3000);')
+                sleep(1)
+                driver.execute_script('window.scrollTo(0, 6000);')
+                sleep(1)
+                driver.execute_script('window.scrollTo(0, 9000);')
+                sleep(1)
+                driver.find_element_by_link_text('Latest').click()
+            except: pass
+            driver.refresh()
+            # sets position variable
+            last_pos = driver.execute_script('return window.pageYOffset;')
             sleep(1)
             print('Starting scrape.')
             s1 = s0 = '0' # scroll level
@@ -128,7 +148,7 @@ class Scrape():
                 for card in cards: # loops in each card
                     try:
                         # gets the tweet info from a card
-                        tweet = self.get_tweet(card.find_element_by_xpath('.//div[@data-testid="tweet"]'))
+                        tweet = self.get_tweet(card.find_element_by_xpath('.//article[@data-testid="tweet"]'))
                         # checks if the tweet is valid
                         if tweet!=None: # len(self.db.query_id(tweet.tweetid))!=0 or 
                             # inserts tweet in database
@@ -136,21 +156,23 @@ class Scrape():
                             count += 1 # counter for tweets obtained
                             clas = Detection.get_classification(tweet.text)
                             if clas['isIncident'] == 1:
-                                i = Tweet.Incident(tweet.tweetid, None,
+                                self.db.assign_classification(tweet.tweetid, True, 
                                                 True if clas['isAccident'] == 1 else False,
                                                 True if clas['isObstacle'] == 1 else False,
                                                 True if clas['isDanger'] == 1 else False)
-                                self.db.insert_incident(i)
                                 count_i += 1
+                            else:
+                                self.db.assign_classification(tweet.tweetid, False, 
+                                    False, False, False)
                             clear_output(wait=True)
                             nowtime = time()
                             # resume
                             sys.stdout.write('\r' + 'Tweets obtained: ' + str(count) + \
-                                '\tIncidents: ' + str(count_i) + \
+                                # '\tIncidents: ' + str(count_i) + \
                                 '\tETA:' + str(timedelta(seconds=nowtime-starttime)))
                             sys.stdout.flush()
                     # if the card is unavailable or something, skips
-                    except Exception as e: print('\n', e)
+                    except Exception as e: print('\nScraping.start_scrape module line 173:', e)
                 # get next scroll
                 if len(s1)>6: break
                 else:
@@ -179,3 +201,9 @@ class Scrape():
         print('\nEnd of search, closing.')
         # close connection
         self.db.close_connection()
+
+if __name__=='__main__':
+    print('Scraping.')
+    scrape = Scrape()
+    scrape.start_scrape()
+    print('Finished.')

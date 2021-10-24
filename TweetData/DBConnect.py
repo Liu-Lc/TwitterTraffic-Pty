@@ -71,22 +71,6 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
-    def insert_incident(self, t):
-        '''Inserts incident data into the Incidents table.'''
-        self.cursor = self.conn.cursor()
-        try:
-            # insert incident
-            command = '''UPDATE TWEETS SET ISINCIDENT=TRUE, 
-                        ISACCIDENT=%s, ISOBSTACLE=%s, ISDANGER=%s
-                        WHERE TWEET_ID=%s;
-                        '''
-            self.cursor.execute(command, (t.isAccident, \
-                                t.isObstacle, t.isDanger, t.tweetid))
-        except Exception as e: print(e)
-        # commit changes and close cursor
-        self.conn.commit()
-        self.cursor.close()
-
     def insert_place(self, t):
         '''Inserts place data into Place table.'''
         self.cursor = self.conn.cursor()
@@ -133,7 +117,9 @@ class DB_Connection():
                         '''
             self.cursor.execute(command, (isincident, isaccident, \
                                 isobstacle, isdanger, id))
-        except Exception as e: print(e)
+        except Exception as e: 
+            print('\nDBConnect.assign_classification module, line 120:', e)
+            print(type(isincident), type(isaccident), type(isobstacle), type(isdanger), type(id))
         # commit changes and close cursor
         self.conn.commit()
         self.cursor.close()
