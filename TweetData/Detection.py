@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Uses the vectorizers and models to classify and
-categorize data.
+"""Uses the vectorizers and models to classify, categorize and geolocate data.
 
 Created on 
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
@@ -41,6 +40,7 @@ def get_classifications(dataframe, column):
     vect_data3 = vectorizer3.transform(df[column])
     ## classifies and categorizes data
     df.loc[:,'isIncident'] = rf_classifier.predict(vect_data3)
+    df.loc[:, 'prob'] = rf_classifier.predict_proba(vect_data3)[:, 1]
     df.loc[:,['isAccident','isObstacle','isDanger']] = mo_classifier.predict(vect_data3)
     # returns result dataframe
     return df
