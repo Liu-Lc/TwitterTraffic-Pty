@@ -155,15 +155,11 @@ class Scrape():
                             self.db.insert_tweet(tweet)
                             count += 1 # counter for tweets obtained
                             clas = Detection.get_classification(tweet.text)
-                            if clas['isIncident'] == 1:
-                                self.db.assign_classification(tweet.tweetid, True, 
-                                                True if clas['isAccident'] == 1 else False,
-                                                True if clas['isObstacle'] == 1 else False,
-                                                True if clas['isDanger'] == 1 else False)
-                                count_i += 1
-                            else:
-                                self.db.assign_classification(tweet.tweetid, False, 
-                                    False, False, False)
+                            db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
+                                            True if clas['isAccident'] == 1 and clas['isIncident'] == 1 else False,
+                                            True if clas['isObstacle'] == 1 and clas['isIncident'] == 1 else False,
+                                            True if clas['isDanger'] == 1 and clas['isIncident'] == 1 else False)
+                            count_i += 1 if clas['isIncident'] else 0
                             clear_output(wait=True)
                             nowtime = time()
                             # resume

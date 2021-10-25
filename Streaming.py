@@ -58,12 +58,10 @@ class SListener(StreamListener):
             db.insert_tweet(tweet)
 
             clas = Detection.get_classification(text)
-            if clas['isIncident'] == 1:
-                i = Tweet.Incident(tweet_id, None,
-                                   True if clas['isAccident'] == 1 else False,
-                                   True if clas['isObstacle'] == 1 else False,
-                                   True if clas['isDanger'] == 1 else False)
-                db.insert_incident(i)
+            db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
+                            True if clas['isAccident'] == 1 and clas['isIncident'] == 1 else False,
+                            True if clas['isObstacle'] == 1 and clas['isIncident'] == 1 else False,
+                            True if clas['isDanger'] == 1 and clas['isIncident'] == 1 else False)
 
             db.close_connection()
             print(text)
@@ -110,12 +108,10 @@ if __name__=='__main__':
         # inserts tweet to db
         db.insert_tweet(row)
         # if the tweet is accident, inserts to database
-        if row.isIncident == 1:
-            i = Tweet.Incident(row.tweetid, None,
-                               True if row.isAccident == 1 else False,
-                               True if row.isObstacle == 1 else False,
-                               True if row.isDanger == 1 else False)
-            db.insert_incident(i)
+        db.assign_classification(row.tweetid, True if row.isIncident == 1 else False, 
+                        True if row.isAccident == 1 and row.isIncident == 1 else False,
+                        True if row.isObstacle == 1 and row.isIncident == 1 else False,
+                        True if row.isDanger == 1 and row.isIncident == 1 else False)
 
     # closes connection
     db.close_connection()
@@ -150,7 +146,7 @@ if __name__=='__main__':
             p.terminate()
             print('Terminated.')
         
-    # reconnect automantically if error arise
+    # reconnect automantically if error rises
     # due to unstable network connection
     except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
         print('CLOSING.')
