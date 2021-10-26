@@ -1,7 +1,7 @@
 import re, json
 import pandas as pd, numpy as np
 
-stop_words = json.load(open('./files/stop_words.json', encoding='utf8'))
+stop_words = json.load(open('./assets/stop_words.json', encoding='utf8'))
 
 def preprocess(tweet):
     """Removes next lines, links, mentions, hashtags, stop words, etc.
