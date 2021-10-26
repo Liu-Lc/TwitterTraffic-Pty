@@ -10,9 +10,9 @@ Created on Sun Apr 18 17:44 2021
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
 """
 
-import time, sys
+import logging, time, sys, os
 sys.path.append('./TweetData')
-from datetime import timedelta
+from datetime import timedelta, date
 
 import pandas as pd
 from multiprocessing import Process
@@ -24,10 +24,26 @@ from TweetData import DBConnect, keys, Tweet, \
     Preprocessing, Updater, Detection
 
 
+# Creación del archivo Log
+LOG_FILE = os.getcwd() + "/logs"
+if not os.path.exists(LOG_FILE):
+    os.makedirs(LOG_FILE)
+LOG_FILE = LOG_FILE + f"/logs_{date.strftime(date.today(), '%Y-%m')}.log"
+logFormatter = logging.Formatter("%(levelname)s %(asctime)s %(message)s")
+fileHandler = logging.FileHandler("{0}".format(LOG_FILE))
+fileHandler.setFormatter(logFormatter)
+stdout_handler = logging.StreamHandler(sys.stdout)
+rootLogger = logging.getLogger()
+rootLogger.addHandler(fileHandler)
+rootLogger.addHandler(stdout_handler)
+rootLogger.setLevel(logging.INFO)
+
+
 class SListener(StreamListener):
 
     # initialize API
     def __init__(self, api=None, fprefix='streamer'):
+        logging.info('StreamListener initiated.')
         self.api = api or API()
 
     # for each tweet streamed
@@ -56,6 +72,7 @@ class SListener(StreamListener):
             db = DBConnect.DB_Connection()
             db.connect(password=keys.db_pass)
             db.insert_tweet(tweet)
+            logging.info(f'New tweet inserted. Tweet ID: {tweet.tweetid}')
 
             clas = Detection.get_classification(text)
             db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
@@ -64,18 +81,19 @@ class SListener(StreamListener):
                             True if clas['isDanger'] == 1 and clas['isIncident'] == 1 else False)
 
             db.close_connection()
-            print(text)
+            # print(text)
 
     # if theres an error
     def on_error(self, status_code):
         if status_code == 420:
+            logging.error('Status code 420. Disconnecting stream.')
             # Returning False in on_data disconnects the stream
             return False
 
 
 if __name__=='__main__':
     # Prepare STREAMING
-    print('Starting.')
+    logging.info('Starting.')
 
     # Update Tweets if the system fails
     # get last date and format it
@@ -87,7 +105,7 @@ if __name__=='__main__':
     last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
 
     # get last week tweets
-    print('Updating data.')
+    logging.info('Updating data.')
     start_time = time.time()
 
     past_tweets = Updater.get_tweets(from_date=last_date)
@@ -97,6 +115,7 @@ if __name__=='__main__':
     data = pd.DataFrame([i.__dict__ for i in past_tweets])
     # get classification and category of each tweet
     data = Detection.get_classifications(data, 'text')
+    logging.info(f'{len(data[data.tweetid > last_id])} new tweets found.')
 
     # gets last id
     last_id = db.query('''
@@ -106,6 +125,7 @@ if __name__=='__main__':
     # iterates through updater tweets
     for index, row in data[data.tweetid > last_id].iterrows():
         # inserts tweet to db
+        # print(f'\n\nTweet {row.isIncident} by {row.userid}: {row.text}')
         db.insert_tweet(row)
         # if the tweet is accident, inserts to database
         db.assign_classification(row.tweetid, True if row.isIncident == 1 else False, 
@@ -117,10 +137,10 @@ if __name__=='__main__':
     db.close_connection()
 
     end_time = time.time()
-    print('Duration: %f\n' % (end_time-start_time))
+    logging.info('Duration: %f\n' % (end_time-start_time))
 
     # Begin collecting data
-    print('Starting stream.')
+    logging.info('Starting stream.')
     # consumer key authentication
     auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
     # access key authentication
@@ -149,4 +169,4 @@ if __name__=='__main__':
     # reconnect automantically if error rises
     # due to unstable network connection
     except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
-        print('CLOSING.')
+        logging.exception()
