@@ -1,8 +1,8 @@
 .gitignore
 others
-models
+# models
 extra
-./TweetData/keys.py
+# TweetData/keys.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
