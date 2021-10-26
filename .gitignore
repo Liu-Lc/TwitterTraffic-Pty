@@ -1,9 +1,8 @@
 .gitignore
 others
+models
 extra
-all_files/keys.py
-historical-data
-TweetData/models
+./TweetData/keys.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
