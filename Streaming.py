@@ -14,6 +14,7 @@ import logging, time, sys, os
 sys.path.append('./TweetData')
 from datetime import timedelta, date
 
+import geopandas as gpd
 import pandas as pd
 from multiprocessing import Process
 from tweepy import API, OAuthHandler, Stream
@@ -110,17 +111,22 @@ if __name__=='__main__':
 
     past_tweets = Updater.get_tweets(from_date=last_date)
 
+    # gets last id
+    last_id = db.query('''
+        SELECT MAX(TWEET_ID) 
+        FROM TWEETS;''')[0][0]
+
     # get tweets to dataframe
     # dict gets a dictionary of attributes and values
     data = pd.DataFrame([i.__dict__ for i in past_tweets])
     # get classification and category of each tweet
     data = Detection.get_classifications(data, 'text')
     logging.info(f'{len(data[data.tweetid > last_id])} new tweets found.')
-
-    # gets last id
-    last_id = db.query('''
-        SELECT MAX(TWEET_ID) 
-        FROM TWEETS;''')[0][0]
+    
+    q = '''SELECT OSM_ID, NAME, ST_CENTROID(way) as geom FROM PLACES '''
+    places = gpd.GeoDataFrame.from_postgis(q, db.conn, geom_col='geom')
+    q1 = '''SELECT GID, NOMBRE, GEOM FROM carreteras WHERE NOMBRE IS NOT NULL '''
+    roads = gpd.GeoDataFrame.from_postgis(q1, db.conn, geom_col='geom')
 
     # iterates through updater tweets
     for index, row in data[data.tweetid > last_id].iterrows():
@@ -132,6 +138,9 @@ if __name__=='__main__':
                         True if row.isAccident == 1 and row.isIncident == 1 else False,
                         True if row.isObstacle == 1 and row.isIncident == 1 else False,
                         True if row.isDanger == 1 and row.isIncident == 1 else False)
+        geo = Detection.get_geo(row.text, places, roads)
+        db.assign_place(row.tweetid, geo['place'], geo['road'])
+        print(geo)
 
     # closes connection
     db.close_connection()

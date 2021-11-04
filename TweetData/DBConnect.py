@@ -1,3 +1,4 @@
+import logging
 import psycopg2 as ps
 from getpass import getpass
 import time, datetime
@@ -85,22 +86,13 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
-    def assign_place(self, id, place, street=None, no=None):
+    def assign_place(self, id, place_id, road_id):
         '''Assigns place with regex strings.'''
         self.cursor = self.conn.cursor()
-        command = '''UPDATE INCIDENTS SET PLACE=%d 
-                         WHERE PLACE IS NULL AND text ~* '%s'
-                         ''' % (id, place)
-        if street!='': 
-            # print('street: ' + street)
-            command += " AND text ~* '" + street + "'"
-        if no!='': 
-            # print('street: ' + no)
-            command += " AND text !~* '" + no + "'"
-        command += ';'
+        command = '''INSERT INTO TWEETS_PLACES(TWEET_ID, ROAD_GID, PLACE_ID) 
+                    VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;'''
         try:
-            self.cursor.execute(command)
-            print(command)
+            self.cursor.execute(command, (id, road_id, place_id))
         except Exception as e: print(e)
         # commit changes and close cursor
         self.conn.commit()
