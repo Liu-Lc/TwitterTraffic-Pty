@@ -10,7 +10,7 @@ Created on Sun Apr 18 17:44 2021
 @author: Lucia Liu (lucia.liu@utp.ac.pa)
 """
 
-import logging, time, sys, os
+import logging, time, signal, sys, os
 sys.path.append('./TweetData')
 from datetime import timedelta, date
 
@@ -161,21 +161,22 @@ if __name__=='__main__':
     listen = SListener(api)
     # instantiate the stream object
     stream = Stream(auth, listen)
-
     # set keywords
     keywords = ['@traficocpanama,traficocpanama,trafico panama']
-    # keywords = ['accidente'] 
+    # Create process for streaming
+    p = Process(target=stream.filter, 
+        kwargs={'track':keywords, 'is_async':True})
+
+    def signal_handler(sig, frame):
+        logging.info('Exiting Stream...')
+        p.terminate()
 
     try: 
-        p = Process(target=stream.filter, 
-            kwargs={'track':keywords, 'is_async':True})
+        logging.info(f'Streaming.py pid: {os.getpid()}')
         p.start()
-        if input("Exit: ")=='q':
-            print('Terminating.')
-            p.terminate()
-            print('Terminated.')
-        
+        logging.info(f'Streaming process pid: {p.pid}')
+        signal.signal(signal.SIGINT, signal_handler)
     # reconnect automantically if error rises
     # due to unstable network connection
     except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
-        logging.exception()
+        logging.exception('Streaming')

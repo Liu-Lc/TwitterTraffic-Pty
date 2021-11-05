@@ -8,10 +8,10 @@ Created on
 """
 
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html
 import pandas as pd
 import geopandas as gpd
+import logging
 import plotly.colors as pcol
 import plotly.express as px
 import plotly.graph_objects as go
@@ -32,6 +32,7 @@ headers = ['tweetid', 'userid', 'username', 'text', 'link']
 tweets_df = pd.DataFrame(columns=headers)
 
 app = dash.Dash(__name__)
+server = app.server
 
 # html.Script(src='widgets.js'),
 # html.Link(rel='stylesheet', href='styles.css')
@@ -43,6 +44,17 @@ app.layout = html.Div(id='mainContainer', children=[
     html.Div(className='column', children=[
         html.H1('Visualización de incidentes de tráfico'),
         html.Hr(),
+    ]),
+    html.Div(className='container', children=[
+        html.Div(className='eleven columns', children=[
+            html.Div(id='none-output'),
+        ]),
+        html.Div(className='one column', children=[
+            html.Button('Terminate', id='terminate-button', className='column'),
+            dcc.ConfirmDialog(id='confirm-terminate',
+                message='Are you sure you want to terminate Streaming?',
+            ),
+        ]),
     ]),
     html.Div(className='container', children=[
         # sección de la izquierda
@@ -187,7 +199,9 @@ def update_map(interval):
         database='traffictwt', user='postgres', password=keys.db_pass)
     q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
         FROM TWEETS_PLACES AS TP
-        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID '''
+        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID 
+        INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID 
+        ORDER BY TP.TWEET_ID DESC'''
     # GeoDataframe
     tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='road_geom')
     conn.close()
@@ -347,6 +361,6 @@ def graph_wordcloud(option):
     
 
 try:
-    app.run_server()
+    app.run_server(host='0.0.0.0', debug=True)
 except Exception as e:
-    print(e)
+    logging.exception('Streaming')
