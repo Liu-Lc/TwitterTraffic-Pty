@@ -1,7 +1,7 @@
 FROM python:3.8.0
 
 RUN mkdir -p /twt-traffic/app
-WORKDIR /usr/twt-traffic/app
+WORKDIR /twt-traffic/app
 
 RUN python -m pip install --upgrade pip
 COPY requirements.txt .
