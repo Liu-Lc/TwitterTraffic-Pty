@@ -11,7 +11,6 @@ Created on Sun Apr 18 17:44 2021
 """
 
 import logging, time, signal, sys, os
-sys.path.append('./TweetData')
 from datetime import timedelta, date
 
 import geopandas as gpd
@@ -21,7 +20,8 @@ from tweepy import API, OAuthHandler, Stream
 from tweepy.streaming import StreamListener
 from urllib3.exceptions import ProtocolError
 
-from TweetData import DBConnect, keys, Tweet, \
+sys.path.append('./TweetData')
+import DBConnect, keys, Tweet, \
     Preprocessing, Updater, Detection
 
 

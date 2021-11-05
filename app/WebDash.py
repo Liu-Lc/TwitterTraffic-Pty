@@ -21,11 +21,11 @@ from wordcloud import WordCloud
 
 from io import BytesIO
 import base64
-import re, random, sys
+import re, random, sys, os
 import datetime
 
 sys.path.append('./TweetData')
-from TweetData import keys, Preprocessing
+import keys, Preprocessing
 
 
 headers = ['tweetid', 'userid', 'username', 'text', 'link']
@@ -361,6 +361,6 @@ def graph_wordcloud(option):
     
 
 try:
-    app.run_server(host='0.0.0.0', debug=True)
+    app.run_server(host='0.0.0.0')
 except Exception as e:
     logging.exception('Streaming')
