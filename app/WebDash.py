@@ -133,8 +133,7 @@ app.layout = html.Div(id='mainContainer', children=[
 )
 ## Get streaming tweets
 def update_tweets(interval, children):
-    conn = ps.connect(
-        database='traffictwt', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, TWEET_CREATED,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
@@ -196,7 +195,7 @@ def update_tweets(interval, children):
 ## Map
 def update_map(interval):
     conn = ps.connect(
-        database='traffictwt', user='postgres', password=keys.db_pass)
+        database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
     q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
         FROM TWEETS_PLACES AS TP
         INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID 
@@ -266,8 +265,7 @@ def type_option(option):
 )
 ## Gráfica de INCIDENTES POR CATEGORÍA O POR PERÍODOS
 def graph_type(type, subtype):
-    conn = ps.connect(
-        database='traffictwt', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     if type=='categ':
         q = '''SELECT
@@ -335,8 +333,7 @@ def graph_type(type, subtype):
 )
 ## Nube de palabras
 def graph_wordcloud(option):
-    conn = ps.connect(
-        database='traffictwt', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_TEXT AS TEXT 
             FROM TWEETS

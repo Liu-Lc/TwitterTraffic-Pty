@@ -11,16 +11,14 @@ class DB_Connection():
         '''Connection to a database.'''
         try:
             if password==None: password = getpass()
-            self.conn = ps.connect(database=database, user=user, password=password)
+            self.conn = ps.connect(database=database, host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com',
+                user=user, password=password)
             return True
         except: return False
 
     def create_tables(self):
         '''Creates table with tweet structure. '''
-        commands = (# Table User
-                    '''CREATE TABLE IF NOT EXISTS USERS(USER_ID TEXT PRIMARY KEY,
-                                        USER_NAME TEXT);''',
-                    # Table Tweet
+        commands = (# Table Tweet
                     '''CREATE TABLE IF NOT EXISTS TWEETS(TWEET_ID BIGINT PRIMARY KEY,
                                                 TWEET_USER_ID TEXT, TWEET_TEXT TEXT,
                                                 TWEET_CREATED TIMESTAMP WITH TIME ZONE,
@@ -29,22 +27,7 @@ class DB_Connection():
                                                 MEDIA1 TEXT, MEDIA2 TEXT, MEDIA3 TEXT, MEDIA4 TEXT,
                                                 CONSTRAINT FK_USER FOREIGN KEY(TWEET_USER_ID)
                                                  REFERENCES TwtUser(USER_ID));''',
-                    # Table Incident
-                    '''CREATE TABLE IF NOT EXISTS INCIDENTS(INC_TWEET_ID BIGINT PRIMARY KEY,
-                                                            INC_PLACE_ID BIGINT,
-                                                            ISINCIDENT BOOLEAN,
-                                                            ISACCIDENT BOOLEAN,
-                                                            ISOBSTACLE BOOLEAN,
-                                                            ISDANGER BOOLEAN,
-                                                            CONSTRAINT FK_TWT_ID FOREIGN KEY(INC_TWEET_ID)
-                                                                REFERENCES TwtTweet(TWEET_ID),
-                                                            CONSTRAINT FK_PLACE_ID FOREIGN KEY(INC_PLACE_ID)
-                                                                REFERENCES Place(PLACE_ID));''',
-                    # Table Place
-                    '''CREATE TABLE IF NOT EXISTS PLACE(PLACE_ID BIGINT PRIMARY KEY,
-                                                        PLACE_NAME TEXT,
-                                                        PLACE_LAT FLOAT,
-                                                        PLACE_LONG FLOAT);''')
+                    )
         self.cursor = self.conn.cursor()
         try:
             for command in commands:
