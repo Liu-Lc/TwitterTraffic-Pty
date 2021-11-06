@@ -1,14 +1,9 @@
 FROM python:3.8.0
 
-RUN mkdir -p /twt-traffic/app
-WORKDIR /twt-traffic/app
+WORKDIR /twt-traffic
 
 RUN python -m pip install --upgrade pip
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY TweetData ./TweetData
-COPY assets ./assets
-COPY WebDash.py .
-
- CMD [ "python", "WebDash.py"]
+CMD [ "python", "app/WebDash.py"]
