@@ -92,7 +92,7 @@ app.layout = html.Div(id='mainContainer', children=[
                                 {'label': 'Mensual', 'value': 'month'},
                                 {'label': 'Anual', 'value': 'year'}
                             ],
-                            value='day'
+                            value='month'
                         ),
                         # dcc.Graph(id='graph-wordcloud'),
                         html.Div(className='background-rectangle', children=[
@@ -102,10 +102,6 @@ app.layout = html.Div(id='mainContainer', children=[
                 ## These intervals just put one?
                 dcc.Interval(id='graphs-update', interval=5000)
             ]),
-            # sección bajo el mapa
-            # html.Div(className='pretty_container', children=[
-            #     dcc.Graph(id='others')
-            # ])
         ])
 
     ]),
@@ -180,8 +176,8 @@ def update_tweets(interval, children):
 
 @app.callback(
     Output('map', 'figure'),
-    # [Input('get-tweets-interval', 'n_intervals'),
-    [Input('button', 'n_clicks')]
+    [Input('get-tweets-interval', 'n_intervals')]
+    # [Input('button', 'n_clicks')]
 )
 ## Map
 def update_map(interval):
@@ -189,18 +185,28 @@ def update_map(interval):
         database='traffictwt', 
         host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', 
         user='postgres', password=keys.db_pass)
-    q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
+    q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, R.NOMBRE AS ROAD_NAME, TP.ROAD_GID, 
+                P.NAME AS PLACE_NAME, TP.PLACE_ID,
+                CASE 
+                    WHEN TP.ROAD_GID IS NOT NULL AND TP.PLACE_ID IS NOT NULL
+                        THEN ST_CLOSESTPOINT(R.GEOM, P.WAY)
+                    WHEN TP.ROAD_GID IS NULL
+                        THEN ST_CENTROID(P.WAY)
+                    WHEN TP.PLACE_ID IS NULL
+                        THEN ST_CENTROID(R.GEOM)
+                    END AS GEOM
         FROM TWEETS_PLACES AS TP
-        INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID 
         INNER JOIN TWEETS AS T ON TP.TWEET_ID=T.TWEET_ID 
+        LEFT JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID 
+        LEFT JOIN PLACES AS P ON TP.PLACE_ID=P.OSM_ID
         ORDER BY TP.TWEET_ID DESC'''
     # GeoDataframe
-    tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='road_geom')
+    tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='geom')
     conn.close()
     ## Generate figure
     fig = go.Figure(
         go.Scattermapbox(
-            lat=tweets_geo['road_geom'].y, lon=tweets_geo['road_geom'].x,
+            lat=tweets_geo['geom'].y, lon=tweets_geo['geom'].x,
             marker=go.scattermapbox.Marker(
                 size=10,
                 color='red',
@@ -248,7 +254,7 @@ def type_option(option):
                     {'label': 'Resumen por semana', 'value': 'week'},
                     {'label': 'Resumen por mes', 'value': 'month'}
                 ]
-    return options, 'day'
+    return options, 'month'
 
 
 @app.callback(
