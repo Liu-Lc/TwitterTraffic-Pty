@@ -4,6 +4,7 @@
 
 /* Tweets content structure */
 .tweet-list {
+  width: 100%;
   list-style: none;
   padding: 0;
 }
@@ -148,6 +149,13 @@ p { font-size: 1.36rem; }
   position: relative;
   box-shadow: 2px 2px 2px lightgrey;
   min-width: 150px;
+}
+
+.sidebar {
+  width: 100%;
+  max-height: 1000px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .one.column,

@@ -46,29 +46,18 @@ app.layout = html.Div(id='mainContainer', children=[
         html.Hr(),
     ]),
     html.Div(className='container', children=[
-        html.Div(className='eleven columns', children=[
-            html.Div(id='none-output'),
-        ]),
-        html.Div(className='one column', children=[
-            html.Button('Terminate', id='terminate-button', className='column'),
-            dcc.ConfirmDialog(id='confirm-terminate',
-                message='Are you sure you want to terminate Streaming?',
-            ),
-        ]),
-    ]),
-    html.Div(className='container', children=[
         # sección de la izquierda
         html.Div(className='row four columns', children=[
             # panel de reportes
             html.Div(className='pretty_container column', children=[
                 html.H4('Reportes'),
                 html.Hr(),
-                html.Div(className='column', children=[
+                html.Div(className='sidebar', children=[
                     html.Ol(id='tweets-list',
                         className='tweet-list', children=[]),
                 ]),
-                html.Button('Generate', id='button', className='column'),
-                dcc.Interval(id='get-tweets-interval', interval=5000),
+                # html.Button('Generate', id='button', className='column'),
+                dcc.Interval(id='get-tweets-interval', interval=60000),
             ]),
         ]),
 
@@ -127,18 +116,20 @@ app.layout = html.Div(id='mainContainer', children=[
 
 @app.callback(
     Output('tweets-list', 'children'),
-    # [Input('get-tweets-interval', 'n_intervals'),
-    [Input('button', 'n_clicks'),
+    [Input('get-tweets-interval', 'n_intervals'),
+    # [Input('button', 'n_clicks'),
     Input('tweets-list', 'children')]
 )
 ## Get streaming tweets
 def update_tweets(interval, children):
-    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', 
+        host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', 
+        user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, TWEET_CREATED,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
             FROM TWEETS WHERE ISINCIDENT=TRUE
-            ORDER BY TWEET_ID DESC LIMIT 10; '''
+            ORDER BY TWEET_ID DESC LIMIT 100; '''
     cursor.execute(q)
     results = cursor.fetchall()
     colnames = [desc[0] 
@@ -195,7 +186,9 @@ def update_tweets(interval, children):
 ## Map
 def update_map(interval):
     conn = ps.connect(
-        database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
+        database='traffictwt', 
+        host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', 
+        user='postgres', password=keys.db_pass)
     q = '''SELECT TP.TWEET_ID, T.TWEET_TEXT, TP.ROAD_GID, R.NOMBRE AS ROAD_NAME, ST_CENTROID(R.GEOM) AS ROAD_GEOM 
         FROM TWEETS_PLACES AS TP
         INNER JOIN CARRETERAS AS R ON TP.ROAD_GID=R.GID 
@@ -265,7 +258,9 @@ def type_option(option):
 )
 ## Gráfica de INCIDENTES POR CATEGORÍA O POR PERÍODOS
 def graph_type(type, subtype):
-    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', 
+        host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', 
+        user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     if type=='categ':
         q = '''SELECT
@@ -333,7 +328,9 @@ def graph_type(type, subtype):
 )
 ## Nube de palabras
 def graph_wordcloud(option):
-    conn = ps.connect(database='traffictwt', host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', user='postgres', password=keys.db_pass)
+    conn = ps.connect(database='traffictwt', 
+        host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com', 
+        user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_TEXT AS TEXT 
             FROM TWEETS
@@ -358,6 +355,6 @@ def graph_wordcloud(option):
     
 
 try:
-    app.run_server(host='0.0.0.0')
+    app.run_server(host='0.0.0.0', debug=True)
 except Exception as e:
     logging.exception('Streaming')
