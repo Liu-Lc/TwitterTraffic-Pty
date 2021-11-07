@@ -92,91 +92,90 @@ class SListener(StreamListener):
             return False
 
 
-if __name__=='__main__':
-    # Prepare STREAMING
-    logging.info('Starting.')
+# Prepare STREAMING
+logging.info('Starting.')
 
-    # Update Tweets if the system fails
-    # get last date and format it
-    db = DBConnect.DB_Connection()
-    db.connect(password=keys.db_pass)
+# Update Tweets if the system fails
+# get last date and format it
+db = DBConnect.DB_Connection()
+db.connect(password=keys.db_pass)
 
-    # gets last date
-    last_date = db.query_date()
-    last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
+# gets last date
+last_date = db.query_date()
+last_date = (last_date - timedelta(days=1)).strftime('%Y-%m-%d')
 
-    # get last week tweets
-    logging.info('Updating data.')
-    start_time = time.time()
+# get last week tweets
+logging.info('Updating data.')
+start_time = time.time()
 
-    past_tweets = Updater.get_tweets(from_date=last_date)
+past_tweets = Updater.get_tweets(from_date=last_date)
 
-    # gets last id
-    last_id = db.query('''
-        SELECT MAX(TWEET_ID) 
-        FROM TWEETS;''')[0][0]
+# gets last id
+last_id = db.query('''
+    SELECT MAX(TWEET_ID) 
+    FROM TWEETS;''')[0][0]
 
-    # get tweets to dataframe
-    # dict gets a dictionary of attributes and values
-    data = pd.DataFrame([i.__dict__ for i in past_tweets])
-    # get classification and category of each tweet
-    data = Detection.get_classifications(data, 'text')
-    logging.info(f'{len(data[data.tweetid > last_id])} new tweets found.')
-    
-    q = '''SELECT OSM_ID, NAME, ST_CENTROID(way) as geom FROM PLACES '''
-    places = gpd.GeoDataFrame.from_postgis(q, db.conn, geom_col='geom')
-    q1 = '''SELECT GID, NOMBRE, GEOM FROM carreteras WHERE NOMBRE IS NOT NULL '''
-    roads = gpd.GeoDataFrame.from_postgis(q1, db.conn, geom_col='geom')
+# get tweets to dataframe
+# dict gets a dictionary of attributes and values
+data = pd.DataFrame([i.__dict__ for i in past_tweets])
+# get classification and category of each tweet
+data = Detection.get_classifications(data, 'text')
+logging.info(f'{len(data[data.tweetid > last_id])} new tweets found.')
 
-    # iterates through updater tweets
-    for index, row in data[data.tweetid > last_id].iterrows():
-        # inserts tweet to db
-        # print(f'\n\nTweet {row.isIncident} by {row.userid}: {row.text}')
-        db.insert_tweet(row)
-        # if the tweet is accident, inserts to database
-        db.assign_classification(row.tweetid, True if row.isIncident == 1 else False, 
-                        True if row.isAccident == 1 and row.isIncident == 1 else False,
-                        True if row.isObstacle == 1 and row.isIncident == 1 else False,
-                        True if row.isDanger == 1 and row.isIncident == 1 else False)
-        geo = Detection.get_geo(row.text, places, roads)
-        db.assign_place(row.tweetid, geo['place'], geo['road'])
-        print(geo)
+q = '''SELECT OSM_ID, NAME, ST_CENTROID(way) as geom FROM PLACES '''
+places = gpd.GeoDataFrame.from_postgis(q, db.conn, geom_col='geom')
+q1 = '''SELECT GID, NOMBRE, GEOM FROM carreteras WHERE NOMBRE IS NOT NULL '''
+roads = gpd.GeoDataFrame.from_postgis(q1, db.conn, geom_col='geom')
 
-    # closes connection
-    db.close_connection()
+# iterates through updater tweets
+for index, row in data[data.tweetid > last_id].iterrows():
+    # inserts tweet to db
+    # print(f'\n\nTweet {row.isIncident} by {row.userid}: {row.text}')
+    db.insert_tweet(row)
+    # if the tweet is accident, inserts to database
+    db.assign_classification(row.tweetid, True if row.isIncident == 1 else False, 
+                    True if row.isAccident == 1 and row.isIncident == 1 else False,
+                    True if row.isObstacle == 1 and row.isIncident == 1 else False,
+                    True if row.isDanger == 1 and row.isIncident == 1 else False)
+    geo = Detection.get_geo(row.text, places, roads)
+    db.assign_place(row.tweetid, geo['place'], geo['road'])
+    print(geo)
 
-    end_time = time.time()
-    logging.info('Duration: %f\n' % (end_time-start_time))
+# closes connection
+db.close_connection()
 
-    # Begin collecting data
-    logging.info('Starting stream.')
-    # consumer key authentication
-    auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
-    # access key authentication
-    auth.set_access_token(keys.access_token, keys.access_token_secret)
-    # set up API with authentication handler
-    api = API(auth, wait_on_rate_limit=True)
+end_time = time.time()
+logging.info('Duration: %f\n' % (end_time-start_time))
 
-    # instantiate the SListener object
-    listen = SListener(api)
-    # instantiate the stream object
-    stream = Stream(auth, listen)
-    # set keywords
-    keywords = ['@traficocpanama,traficocpanama,trafico panama']
-    # Create process for streaming
-    p = Process(target=stream.filter, 
-        kwargs={'track':keywords, 'is_async':True})
+# Begin collecting data
+logging.info('Starting stream.')
+# consumer key authentication
+auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
+# access key authentication
+auth.set_access_token(keys.access_token, keys.access_token_secret)
+# set up API with authentication handler
+api = API(auth, wait_on_rate_limit=True)
 
-    def signal_handler(sig, frame):
-        logging.info('Exiting Stream...')
-        p.terminate()
+# instantiate the SListener object
+listen = SListener(api)
+# instantiate the stream object
+stream = Stream(auth, listen)
+# set keywords
+keywords = ['@traficocpanama,traficocpanama,trafico panama']
+# Create process for streaming
+p = Process(target=stream.filter, 
+    kwargs={'track':keywords, 'is_async':True})
 
-    try: 
-        logging.info(f'Streaming.py pid: {os.getpid()}')
-        p.start()
-        logging.info(f'Streaming process pid: {p.pid}')
-        signal.signal(signal.SIGINT, signal_handler)
-    # reconnect automantically if error rises
-    # due to unstable network connection
-    except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
-        logging.exception('Streaming')
+def signal_handler(sig, frame):
+    logging.info('Exiting Stream...')
+    p.terminate()
+
+try: 
+    logging.info(f'Streaming.py pid: {os.getpid()}')
+    p.start()
+    logging.info(f'Streaming process pid: {p.pid}')
+    signal.signal(signal.SIGINT, signal_handler)
+# reconnect automantically if error rises
+# due to unstable network connection
+except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
+    logging.exception('Streaming')
