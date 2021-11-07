@@ -11,7 +11,7 @@ class DB_Connection():
         '''Connection to a database.'''
         try:
             if password==None: password = getpass()
-            self.conn = ps.connect(database=database, host='twt-database-1.cdjs1zrptpyg.us-east-2.rds.amazonaws.com',
+            self.conn = ps.connect(database=database, host='10.11.16.3',
                 user=user, password=password)
             return True
         except: return False
