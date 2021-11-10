@@ -88,8 +88,7 @@ class DB_Connection():
             # insert incident
             command = '''UPDATE TWEETS SET ISINCIDENT=%s, 
                         ISACCIDENT=%s, ISOBSTACLE=%s, ISDANGER=%s
-                        WHERE TWEET_ID=%s;
-                        '''
+                        WHERE TWEET_ID=%s;'''
             self.cursor.execute(command, (isincident, isaccident, \
                                 isobstacle, isdanger, id))
         except Exception as e: 

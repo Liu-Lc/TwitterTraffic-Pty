@@ -361,6 +361,6 @@ def graph_wordcloud(option):
     
 
 try:
-    app.run_server(host='0.0.0.0', debug=True)
+    app.run_server(host='0.0.0.0')
 except Exception as e:
     logging.exception('Streaming')
