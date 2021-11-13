@@ -43,14 +43,13 @@ class Scrape():
         """
         
         ## GET USER INFO AND TWEET TEXT
-        place = coords = '' # empty place and coords
         userid = card.find_element_by_xpath('.//span[contains(text(), "@")]').text
         username = card.find_element_by_xpath('.//span').text
         text = card.find_element_by_xpath('.//div[2]/div[2]/div[2]/div[1]').text
         ## GET TIME DATA
         try:
             date = card.find_element_by_xpath('.//time').get_attribute('datetime')
-        except NoSuchElementException as e:
+        except NoSuchElementException:
             # if it doesn't have date, means
             # it's an ad or something else
             return
@@ -155,7 +154,7 @@ class Scrape():
                             self.db.insert_tweet(tweet)
                             count += 1 # counter for tweets obtained
                             clas = Detection.get_classification(tweet.text)
-                            db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
+                            self.db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
                                             True if clas['isAccident'] == 1 and clas['isIncident'] == 1 else False,
                                             True if clas['isObstacle'] == 1 and clas['isIncident'] == 1 else False,
                                             True if clas['isDanger'] == 1 and clas['isIncident'] == 1 else False)
