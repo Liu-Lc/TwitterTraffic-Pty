@@ -31,11 +31,8 @@ import keys, Preprocessing
 headers = ['tweetid', 'userid', 'username', 'text', 'link']
 tweets_df = pd.DataFrame(columns=headers)
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, title='Incidentes PTY', update_title=None)
 server = app.server
-
-# html.Script(src='widgets.js'),
-# html.Link(rel='stylesheet', href='styles.css')
 
 # app layout
 app.layout = html.Div(id='mainContainer', children=[
@@ -176,11 +173,11 @@ def update_tweets(interval, children):
 
 @app.callback(
     Output('map', 'figure'),
-    [Input('get-tweets-interval', 'n_intervals')]
-    # [Input('button', 'n_clicks')]
+    [Input('get-tweets-interval', 'n_intervals')],
+    [State('map', 'relayoutData')]
 )
 ## Map
-def update_map(interval):
+def update_map(interval, relayout):
     conn = ps.connect(
         database='traffictwt', 
         host='10.11.16.3', 
@@ -223,8 +220,10 @@ def update_map(interval):
     )
     fig.update_layout(
         margin={"r":0,"t":0,"l":0,"b":0},
-        mapbox_style="open-street-map", mapbox_zoom=11,
-        mapbox_center={'lat':8.98, 'lon':-79.5359},
+        mapbox_style="open-street-map", 
+        mapbox_zoom=11 if relayout==None else relayout['mapbox.zoom'],
+        mapbox_center={'lat':8.98, 'lon':-79.5359} if relayout==None
+            else relayout['mapbox.center'],
         hoverlabel=dict(
             bgcolor="white",
             font_size=12,
@@ -358,7 +357,7 @@ def graph_wordcloud(option):
         width=350, height=200).generate(tweets)
     wc.to_image().save(img, format='PNG')
     return 'data:image/png;base64,{}'.format(base64.b64encode(img.getvalue()).decode())
-    
+
 
 try:
     app.run_server(host='0.0.0.0')
