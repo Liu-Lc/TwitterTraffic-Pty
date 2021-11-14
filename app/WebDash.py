@@ -198,7 +198,7 @@ def update_map(interval, relayout):
         LEFT JOIN PLACES AS P ON TP.PLACE_ID=P.OSM_ID
         WHERE TP.ROAD_GID IS NOT NULL AND TP.PLACE_ID IS NOT NULL
             AND T.ISINCIDENT=TRUE
-        ORDER BY TP.TWEET_ID DESC LIMIT 500'''
+        ORDER BY TP.TWEET_ID DESC LIMIT 2000'''
     # GeoDataframe
     tweets_geo = gpd.GeoDataFrame.from_postgis(q, conn, geom_col='geom')
     conn.close()
