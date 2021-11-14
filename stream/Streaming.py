@@ -47,6 +47,14 @@ class SListener(StreamListener):
         logging.info('StreamListener initiated.')
         self.api = api or API()
 
+        db = DBConnect.DB_Connection()
+        db.connect(password=keys.db_pass)
+        q = '''SELECT OSM_ID, NAME, ST_CENTROID(way) as geom FROM PLACES '''
+        self.places = gpd.GeoDataFrame.from_postgis(q, db.conn, geom_col='geom')
+        q1 = '''SELECT GID, NOMBRE, GEOM FROM carreteras WHERE NOMBRE IS NOT NULL '''
+        self.roads = gpd.GeoDataFrame.from_postgis(q1, db.conn, geom_col='geom')
+        db.close_connection()
+
     # for each tweet streamed
     def on_status(self, status):
         # If tweet is not a retweet and tweet is in English
@@ -80,9 +88,10 @@ class SListener(StreamListener):
                             True if clas['isAccident'] == 1 and clas['isIncident'] == 1 else False,
                             True if clas['isObstacle'] == 1 and clas['isIncident'] == 1 else False,
                             True if clas['isDanger'] == 1 and clas['isIncident'] == 1 else False)
+            geo = Detection.get_geo(text, self.places, self.roads)
+            db.assign_place(tweet.tweetid, geo['place'], geo['road'])
 
             db.close_connection()
-            # print(text)
 
     # if theres an error
     def on_error(self, status_code):
