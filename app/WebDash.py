@@ -120,7 +120,7 @@ def update_tweets(interval, children):
         user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
     q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, 
-            TWEET_CREATED AT TIME ZONE 'UTF+5' AS TWEET_CREATED,
+            TWEET_CREATED AT TIME ZONE 'UTC+5' AS TWEET_CREATED,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
             FROM TWEETS WHERE ISINCIDENT=TRUE
             ORDER BY TWEET_ID DESC LIMIT 100; '''
@@ -156,7 +156,7 @@ def update_tweets(interval, children):
                             ]),
                             html.Span(className='date-text', children=[
                                 tweet.tweet_created.strftime('%b-%d' if 
-                                    tweet.tweet_created.date() < datetime.datetime.today().date()
+                                    tweet.tweet_created.date() < (datetime.datetime.today() - datetime.timedelta(hours=5)).date()
                                     else '%H:%M'
                                 ),
                                 html.Span(className='date-tooltip', children=[
