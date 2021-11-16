@@ -22,7 +22,7 @@ from urllib3.exceptions import ProtocolError
 
 sys.path.append('./TweetData')
 import DBConnect, keys, Tweet, \
-    Preprocessing, Updater, Detection
+    Updater, Detection
 
 
 # Creación del archivo Log
@@ -95,10 +95,9 @@ class SListener(StreamListener):
 
     # if theres an error
     def on_error(self, status_code):
-        if status_code == 420:
-            logging.error('Status code 420. Disconnecting stream.')
-            # Returning False in on_data disconnects the stream
-            return False
+        logging.error(f'Status code {status_code}. Disconnecting stream.')
+        # Returning False in on_data disconnects the stream
+        return False
 
 
 # Prepare STREAMING
@@ -164,27 +163,21 @@ auth = OAuthHandler(keys.consumer_key, keys.consumer_secret)
 auth.set_access_token(keys.access_token, keys.access_token_secret)
 # set up API with authentication handler
 api = API(auth, wait_on_rate_limit=True)
-
-# instantiate the SListener object
-listen = SListener(api)
-# instantiate the stream object
-stream = Stream(auth, listen)
 # set keywords
 keywords = ['@traficocpanama,traficocpanama,trafico panama']
-# Create process for streaming
-p = Process(target=stream.filter, 
-    kwargs={'track':keywords, 'is_async':True})
+logging.info(f'Streaming.py pid: {os.getpid()}')
 
-def signal_handler(sig, frame):
-    logging.info('Exiting Stream...')
-    p.terminate()
-
-try: 
-    logging.info(f'Streaming.py pid: {os.getpid()}')
-    p.start()
-    logging.info(f'Streaming process pid: {p.pid}')
-    signal.signal(signal.SIGINT, signal_handler)
-# reconnect automantically if error rises
-# due to unstable network connection
-except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
-    logging.exception('Streaming')
+while True:
+    # instantiate the SListener object
+    listen = SListener(api)
+    # instantiate the stream object
+    stream = Stream(auth, listen, timeout=120)
+    
+    try:
+        stream.filter(track=keywords)
+        # reconnect automantically if error rises
+        # due to unstable network connection
+    except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
+        logging.exception('Disconnected from stream.')
+        logging.info('Waiting 15 minutes to restart streaming...')
+        time.sleep(15*60)
