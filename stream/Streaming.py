@@ -147,7 +147,6 @@ for index, row in data[data.tweetid > last_id].iterrows():
                     True if row.isDanger == 1 and row.isIncident == 1 else False)
     geo = Detection.get_geo(row.text, places, roads)
     db.assign_place(row.tweetid, geo['place'], geo['road'])
-    print(geo)
 
 # closes connection
 db.close_connection()
