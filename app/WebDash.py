@@ -119,7 +119,8 @@ def update_tweets(interval, children):
         host='10.11.16.3', 
         user='postgres', password=keys.db_pass)
     cursor = conn.cursor()
-    q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, TWEET_CREATED,
+    q = '''SELECT TWEET_ID AS TWEETID, USER_NAME AS USERNAME, 
+            TWEET_CREATED AT TIME ZONE 'UTF-7' AS TWEET_CREATED,
             USER_ID AS USERID, TWEET_TEXT AS TEXT, TWEET_LINK AS LINK
             FROM TWEETS WHERE ISINCIDENT=TRUE
             ORDER BY TWEET_ID DESC LIMIT 100; '''
@@ -145,7 +146,8 @@ def update_tweets(interval, children):
 
     for index, tweet in new_data.iterrows():
         block += [html.Li(className='tweet-card', children=[
-                html.A(className='tweet-link', href=tweet.link, children=[
+                html.A(className='tweet-link', target='_blank',
+                        href=tweet.link, children=[
                     html.Div(className='tweet-content', children=[
                         html.Div(className='tweet-header', children=[
                             html.Span(children=[

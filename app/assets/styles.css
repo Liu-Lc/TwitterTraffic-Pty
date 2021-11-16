@@ -33,7 +33,7 @@
   z-index: 1;
   top: 100%;
   left: 50%;
-  margin-left: -60px;
+  margin-left: -80px;
 }
 .date-text:hover .date-tooltip {
   visibility: visible;
