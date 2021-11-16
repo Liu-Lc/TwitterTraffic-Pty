@@ -178,5 +178,5 @@ while True:
         # due to unstable network connection
     except (ProtocolError, AttributeError, KeyboardInterrupt) as e:
         logging.exception('Disconnected from stream.')
-        logging.info('Waiting 15 minutes to restart streaming...')
-        time.sleep(15*60)
+        logging.info('Waiting 5 minutes to restart streaming...')
+        time.sleep(5*60)
