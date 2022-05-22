@@ -13,12 +13,12 @@ import Preprocessing
 import pickle
 
 # load  vectorizers
-with open('./models/vectorizer3000', 'rb') as vect1:
+with open('./models/vectorizer_1200', 'rb') as vect1:
     vectorizer3 = pickle.load(vect1)
 # load models
-with open('./models/rf_est3000', 'rb') as training_model:
+with open('./models/rf_model', 'rb') as training_model:
     rf_classifier = pickle.load(training_model)
-with open('./models/mo_1600_est_3000', 'rb') as training_model:
+with open('./models/mo_model', 'rb') as training_model:
     mo_classifier = pickle.load(training_model)
 
 # asdf
