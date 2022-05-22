@@ -80,7 +80,7 @@ class Scrape():
         driver.get('https://www.twitter.com\login')
         sleep(5) # time to load
         ## user and pass
-        username = driver.find_element_by_xpath('//input[@name="username"]')
+        username = driver.find_element_by_xpath('//input[@autocomplete="username"]')
         username.send_keys('Lc_L23' + Keys.RETURN)
         sleep(2)
         password = driver.find_element_by_xpath('//input[@name="password"]')
@@ -182,7 +182,7 @@ class Scrape():
                         s0 = str(int(float(s0) + 2000)) # scrolls 2000 points
                         s0 = re.sub('\+', 'e', s0)
                         driver.execute_script('window.scrollTo(0, ' + s0 +');')
-                    sleep(2)
+                    sleep(1)
                     # sets current position
                     curr_pos = driver.execute_script('return window.pageYOffset;')
                     # if reached end of page = break loop
