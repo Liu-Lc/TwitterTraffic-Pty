@@ -100,6 +100,21 @@ class DB_Connection():
         self.conn.commit()
         self.cursor.close()
 
+    def assign_clean_text(self, id, clean_text):
+        '''Inserts tweet clean text.'''
+        self.cursor = self.conn.cursor()
+        try:
+            # insert incident
+            command = '''UPDATE TWEETS SET CLEAN_TEXT=%s
+                        WHERE TWEET_ID=%s;'''
+            self.cursor.execute(command, (clean_text, id))
+        except Exception as e: 
+            print('\nDBConnect.assign_clean_text module:', e)
+            print(type(clean_text), type(id))
+        # commit changes and close cursor
+        self.conn.commit()
+        self.cursor.close()
+
     def query_id(self, tweetid):
         '''Returns id from query.'''
         results = ''
