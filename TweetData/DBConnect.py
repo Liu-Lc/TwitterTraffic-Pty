@@ -2,6 +2,7 @@ import logging
 import psycopg2 as ps
 from getpass import getpass
 import time, datetime
+import keys
 
 class DB_Connection():
     def __init__(self):
@@ -11,8 +12,9 @@ class DB_Connection():
         '''Connection to a database.'''
         try:
             if password==None: password = getpass()
-            self.conn = ps.connect(database=database, host='10.11.16.3',
-                user=user, password=password)
+            self.conn = ps.connect(database=keys.database, 
+                host=keys.host, 
+                user=keys.user, password=password)
             return True
         except: return False
 
