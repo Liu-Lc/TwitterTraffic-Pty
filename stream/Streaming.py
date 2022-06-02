@@ -84,6 +84,7 @@ class SListener(StreamListener):
             logging.info(f'New tweet inserted. Tweet ID: {tweet.tweetid}')
 
             clas = Detection.get_classification(text)
+            db.assign_clean_text(clas.tweet_id, clas.clean)
             db.assign_classification(tweet.tweetid, True if clas['isIncident'] == 1 else False, 
                             True if clas['isAccident'] == 1 and clas['isIncident'] == 1 else False,
                             True if clas['isObstacle'] == 1 and clas['isIncident'] == 1 else False,
