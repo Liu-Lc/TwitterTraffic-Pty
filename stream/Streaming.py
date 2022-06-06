@@ -142,7 +142,7 @@ for index, row in data[data.tweetid > last_id].iterrows():
     # print(f'\n\nTweet {row.isIncident} by {row.userid}: {row.text}')
     db.insert_tweet(row)
     # store processed clean text
-    db.assign_clean_text(row.tweet_id, row.clean)
+    db.assign_clean_text(row.tweetid, row.clean)
     # if the tweet is incident, inserts to database
     db.assign_classification(row.tweetid, True if row.isIncident == 1 else False, 
                     True if row.isAccident == 1 and row.isIncident == 1 else False,
