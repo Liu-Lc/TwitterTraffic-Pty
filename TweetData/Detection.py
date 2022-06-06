@@ -60,6 +60,7 @@ def get_classification(text):
     # clean text
     txt = Preprocessing.preprocess(text)
     results = {} # creates a dictionary
+    results['clean_text'] = txt
     # vectorize data
     vect_data3 = vectorizer3.transform([txt])
     ## classifies and categorizes data
